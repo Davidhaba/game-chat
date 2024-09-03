@@ -37,7 +37,7 @@ def handle_message(data):
 
 @socketio.on('get_rooms')
 def handle_request_room_list():
-    emit('room_list', [{'name': room} for room in rooms])
+    emit('room_list', list(rooms))
 
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=80)
