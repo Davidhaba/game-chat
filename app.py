@@ -42,7 +42,7 @@ def handle_request_room_list():
 
 @socketio.on('get_connections')
 def handle_request_room_list():
-    emit('get_connections', list(usernames))
+    emit('connected_list', list(usernames))
 
 @socketio.on('disconnect')
 def handle_disconnect():
