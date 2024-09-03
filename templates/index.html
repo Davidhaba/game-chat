@@ -129,9 +129,9 @@
             <button id="getConnectionsRoomBtn" onclick="getConnections()">Connections</button>
             <div id="connectedToRoom">
                 <button id="closeConnectionsRoomBtn" onclick="closeConnections()">X</button>
-                <p>Connected to the room:</p>
+                <p>Connected users to the room:</p>
                 <div id="divConnectionsToRoom"></div>
-                <p id="connectionsFoundP">No connections found.</p>
+                <p id="connectionsFoundP">No connected users found.</p>
             </div>
         </div>
     </div>
@@ -231,6 +231,7 @@ socket.on('connected_list', function(connections) {
 
 function getConnections() {
     document.getElementById("connectedToRoom").style.display = "block";
+    connectionsFoundP.textContent = "Loading...";
     socket.emit('get_connections');
 }
 function closeConnections() {
