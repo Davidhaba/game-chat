@@ -92,6 +92,10 @@
             top: -3px;
             padding: 5px 5px;
         }
+        #connectedToRoom {
+            display: none;
+            position: absolute;
+        }
     </style>
 </head>
 <body>
@@ -122,6 +126,13 @@
               <input id="message" type="text" placeholder="Enter your message" disabled>
               <button onclick="sendMessage()">Send</button>
             </div>
+            <button id="getConnectionsRoomBtn" onclick="getConnections()">Connections</button>
+            <div id="connectedToRoom">
+                <button id="closeConnectionsRoomBtn" onclick="closeConnections()">X</button>
+                <p>Connected to the room:</p>
+                <div id="divConnectionsToRoom"></div>
+                <p id="connectionsFoundP">No connections found.</p>
+            </div>
         </div>
     </div>
 <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
@@ -131,6 +142,7 @@ var currentRoom = null;
 const searchRoomsText = document.getElementById("searchRooms");
 const createOrJoinRoomButton = document.getElementById("createOrJoinRoomButton");
 const createOrJoinText = "Create/Join a room";
+const connectionsFoundP = document.getElementById("connectionsFoundP");
 document.getElementById('togglePassword').addEventListener('click', function() {
     var passwordField = document.getElementById('password');
     var type = passwordField.getAttribute('type');
@@ -202,6 +214,28 @@ socket.on('room_list', function(rooms) {
     }
 });
 
+socket.on('connected_list', function(connections) {
+    var divConnectionsToRoom = document.getElementById("divConnectionsToRoom");
+    divConnectionsToRoom.innerHTML = '';
+    if (connections.length > 0) {
+      connections.forEach(function(connection) {
+        var li = document.createElement('li');
+        li.textContent = connection;
+        divConnectionsToRoom.appendChild(li);
+      });
+      connectionsFoundP.textContent = "";
+    } else {
+      connectionsFoundP.textContent = "No connections found.";
+    }
+});
+
+function getConnections() {
+    document.getElementById("connectedToRoom").style.display = "block";
+    socket.emit('get_connections');
+}
+function closeConnections() {
+    document.getElementById("connectedToRoom").style.display = "none";
+}
 socket.on('room_joined', function(data) {
     currentRoom = data.room;
     document.getElementById('connection').style.display = 'none';
