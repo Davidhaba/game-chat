@@ -46,7 +46,7 @@ def handle_disconnect():
     if user_id in usernames:
         room = usernames[user_id]['room']
         username = usernames[user_id]['username']
-        emit('message', {'username': username, 'msg': f'залишив кімнату {room}', 'color': 'red'}, room=room)
+        emit('message', {'username': username, 'msg': f'left the room {room}', 'color': 'red'}, room=room)
         del usernames[user_id]
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=80)
