@@ -145,7 +145,7 @@ document.getElementById('togglePassword').addEventListener('click', function() {
 function createOrJoinRoom(button) {
     const usernameInput = document.getElementById('username');
     if (!usernameInput.value) {
-        usernameInput.value = "Анонім";
+        usernameInput.value = "Anonymous";
     }
     var username = usernameInput.value;
     const room = document.getElementById('room');
@@ -154,10 +154,10 @@ function createOrJoinRoom(button) {
     document.getElementById('password').style.borderColor = "black";
     if (roomValue) {
         socket.emit('create_or_join', {username: username, room: roomValue, password: password});
-        button.textContent = "Завантаження...";
+        button.textContent = "Loading...";
         room.style.borderColor = "black";
     } else {
-        button.textContent = "Створити/Приєднатися до кімнати";
+        button.textContent = "Create/Join a room";
         room.style.borderColor = "red";
     }
 }
@@ -168,7 +168,7 @@ function sendMessage() {
     if (msg && currentRoom) {
         var username = document.getElementById('username').value.trim();
         if (!username) {
-            username = "Анонім";
+            username = "Anonymous";
         }
         socket.emit('message', {username: username, msg: msg, room: currentRoom});
         input.value = '';
