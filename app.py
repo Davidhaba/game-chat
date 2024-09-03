@@ -40,6 +40,10 @@ def handle_message(data):
 def handle_request_room_list():
     emit('room_list', list(rooms))
 
+@socketio.on('get_connections')
+def handle_request_room_list():
+    emit('get_connections', list(usernames))
+
 @socketio.on('disconnect')
 def handle_disconnect():
     user_id = request.sid
