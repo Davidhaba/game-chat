@@ -97,30 +97,30 @@
 <body>
     <div class="container">
         <div id='connection'>
-          <h1>Вітаємо в грі</h1>
-          <input id="username" type="text" placeholder="Введіть ваше ім'я">
+          <h1>Welcome to the game</h1>
+          <input id="username" type="text" placeholder="Enter your name">
           <br>
-          <input id="room" type="text" placeholder="Введіть назву кімнати">
+          <input id="room" type="text" placeholder="Enter the name of the room">
           <br>
           <div class="password-container">
-            <input id="password" type="password" placeholder="Введіть пароль (необов'язково)">
+            <input id="password" type="password" placeholder="Enter a password (optional)">
             <button id="togglePassword">👁</button>
           </div>
           <br>
-          <button onclick="createOrJoinRoom(this)">Створити/Приєднатися до кімнати</button>
+          <button onclick="createOrJoinRoom(this)">Create/Join a room</button>
 
           <div id="roomList">
-            <h2>Існуючі кімнати</h2>
-            <p id="searchRooms">Пошук...</p>
+            <h2>Existing rooms</h2>
+            <p id="searchRooms">Search...</p>
             <ul id="rooms"></ul>
           </div>
         </div>
         <div id="chat">
-            <h2>Чат</h2>
+            <h2>Chat</h2>
             <ul id="messages"></ul>
             <div id='inputMessage'>
-              <input id="message" type="text" placeholder="Введіть ваше повідомлення" disabled>
-              <button onclick="sendMessage()">Надіслати</button>
+              <input id="message" type="text" placeholder="Enter your message" disabled>
+              <button onclick="sendMessage()">Send</button>
             </div>
         </div>
     </div>
@@ -215,7 +215,7 @@ socket.on('password_incorrect', function(message) {
 
 function searchRooms() {
     socket.emit('get_rooms');
-    searchRoomsText.textContent = "Пошук...";
+    searchRoomsText.textContent = "Search...";
 }
 searchRooms();
 </script>
