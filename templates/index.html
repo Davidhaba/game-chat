@@ -228,6 +228,10 @@ socket.on('message', function(data) {
     li.textContent = data.username + ' ' + data.msg;
     li.style.color = data.color || 'black';
     messages.appendChild(li);
+    messages.scrollTo({
+        top: messages.scrollHeight,
+        behavior: 'smooth'
+    });
 });
 
 socket.on('room_list', function(rooms) {
