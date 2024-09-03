@@ -54,6 +54,8 @@
         li {
             padding: 8px;
             border-bottom: 1px solid #ddd;
+            max-width: 100%;
+            overflow-wrap: break-word;
         }
         #roomList {
             margin-top: 20px;
@@ -63,8 +65,14 @@
             display: block;
         }
         #messages {
-            max-width: 90%;
-            word-wrap: break-word;
+            padding: 0;
+            margin: 0;
+            max-width: 100%;
+            overflow-y: auto;
+            max-height: 400px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            box-sizing: border-box; 
         }
         #message {
             width: 70%;
