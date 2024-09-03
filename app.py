@@ -5,6 +5,7 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your_secret_key'
 socketio = SocketIO(app)
 rooms = {}
+usernames = {}
 
 @app.route('/')
 def index():
@@ -24,6 +25,7 @@ def handle_create_or_join(data):
         rooms[room] = {'password': password}
 
     join_room(room)
+    usernames[request.sid] = {'room': room, 'username': username}
     emit('message', {'username': username, 'msg': f'приєднався до кімнати {room}', 'color': 'green'}, room=room)
     emit('room_list', list(rooms), broadcast=True)
     emit('room_joined', {'room': room})
@@ -39,5 +41,13 @@ def handle_message(data):
 def handle_request_room_list():
     emit('room_list', list(rooms))
 
+@socketio.on('disconnect')
+def handle_disconnect():
+    user_id = request.sid
+    if user_id in usernames:
+        room = usernames[user_id]['room']
+        username = usernames[user_id]['username']
+        emit('message', {'username': username, 'msg': f'залишив кімнату {room}', 'color': 'red'}, room=room)
+        del usernames[user_id]
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=80)
