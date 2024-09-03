@@ -42,7 +42,14 @@ def handle_request_room_list():
 
 @socketio.on('get_connections')
 def handle_request_room_list():
-    emit('connected_list', list(usernames))
+    user_list = []
+    current_room = usernames[request.sid]['room']
+    
+    for sid, user_info in usernames.items():
+        if user_info['room'] == current_room:
+            user_list.append(user_info['username'])
+    
+    emit('connected_list', user_list)
 
 @socketio.on('disconnect')
 def handle_disconnect():
