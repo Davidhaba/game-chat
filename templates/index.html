@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Онлайн Гра</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+        }
+        .container {
+            max-width: 700px;
+            margin: auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input[type="text"], input[type="password"] {
+            padding: 10px;
+            margin: 10px;
+            width: 70%;
+            border: 1px solid black;
+            border-radius: 4px;
+            display: inline-block;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            margin: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #chat {
+            margin-top: 20px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        #roomList {
+            margin-top: 20px;
+            text-align: left;
+        }
+        #connection {
+            display: block;
+        }
+        #messages {
+            max-width: 90%;
+            word-wrap: break-word;
+        }
+        #message {
+            width: 70%;
+            max-width: 500px;
+        }
+        #inputMessage {
+            position: absolute;
+            bottom: 20px;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        .password-container {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+        #togglePassword {
+            position: absolute;
+            right: 14%;
+            border: none;
+            cursor: pointer;
+            font-size: 20px;
+            background: none;
+            color: black;
+            top: -3px;
+            padding: 5px 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id='connection'>
+          <h1>Вітаємо в грі</h1>
+          <input id="username" type="text" placeholder="Введіть ваше ім'я">
+          <br>
+          <input id="room" type="text" placeholder="Введіть назву кімнати">
+          <br>
+          <div class="password-container">
+            <input id="password" type="password" placeholder="Введіть пароль (необов'язково)">
+            <button id="togglePassword">👁</button>
+          </div>
+          <br>
+          <button onclick="createOrJoinRoom(this)">Створити/Приєднатися до кімнати</button>
+
+          <div id="roomList">
+            <h2>Існуючі кімнати</h2>
+            <p id="searchRooms">Пошук...</p>
+            <ul id="rooms"></ul>
+          </div>
+        </div>
+        <div id="chat">
+            <h2>Чат</h2>
+            <ul id="messages"></ul>
+            <div id='inputMessage'>
+              <input id="message" type="text" placeholder="Введіть ваше повідомлення" disabled>
+              <button onclick="sendMessage()">Надіслати</button>
+            </div>
+        </div>
+    </div>
+<script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
+<script>
+var socket = io();
+var currentRoom = null;
+const searchRoomsText = document.getElementById("searchRooms");
+
+document.getElementById('togglePassword').addEventListener('click', function() {
+    var passwordField = document.getElementById('password');
+    var type = passwordField.getAttribute('type');
+    if (type === 'password') {
+        passwordField.setAttribute('type', 'text');
+        this.textContent = '🙈';
+    } else {
+        passwordField.setAttribute('type', 'password');
+        this.textContent = '👁';
+    }
+});
+
+function createOrJoinRoom(button) {
+    const usernameInput = document.getElementById('username');
+    if (!usernameInput.value) {
+        usernameInput.value = "Анонім";
+    }
+    var username = usernameInput.value;
+    const room = document.getElementById('room');
+    var password = document.getElementById('password').value;
+    var roomValue = room.value.trim();
+    document.getElementById('password').style.borderColor = "black";
+    if (roomValue) {
+        socket.emit('create_or_join', {username: username, room: roomValue, password: password});
+        button.textContent = "Завантаження...";
+        room.style.borderColor = "black";
+    } else {
+        button.textContent = "Створити/Приєднатися до кімнати";
+        room.style.borderColor = "red";
+    }
+}
+
+function sendMessage() {
+    const input = document.getElementById('message');
+    var msg = input.value;
+    if (msg && currentRoom) {
+        var username = document.getElementById('username').value.trim();
+        if (!username) {
+            username = "Анонім";
+        }
+        socket.emit('message', {username: username, msg: msg, room: currentRoom});
+        input.value = '';
+        input.style.borderColor = "black";
+    } else {
+        input.style.borderColor = "red";
+    }
+}
+
+socket.on('message', function(data) {
+    var messages = document.getElementById('messages');
+    var li = document.createElement('li');
+    li.textContent = data.username + ' ' + data.msg;
+    li.style.color = data.color || 'black';
+    messages.appendChild(li);
+});
+
+socket.on('room_list', function(rooms) {
+    var roomsList = document.getElementById('rooms');
+    roomsList.innerHTML = '';
+    if (rooms.length > 0) {
+      rooms.forEach(function(room) {
+        var li = document.createElement('li');
+        li.textContent = room;
+        roomsList.appendChild(li);
+      });
+      searchRoomsText.textContent = "";
+    } else {
+      searchRoomsText.textContent = "Кімнат не знайдено.";
+    }
+});
+
+socket.on('room_joined', function(data) {
+    currentRoom = data.room;
+    document.getElementById('connection').style.display = 'none';
+    document.getElementById('chat').style.display = 'flex';
+    document.getElementById('message').disabled = false;
+});
+
+socket.on('password_incorrect', function(message) {
+    alert(message);
+    document.getElementById('password').style.borderColor = "red";
+});
+
+function searchRooms() {
+    socket.emit('get_rooms');
+    searchRoomsText.textContent = "Пошук...";
+}
+searchRooms();
+</script>
+</body>
+</html>
