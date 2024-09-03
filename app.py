@@ -41,7 +41,7 @@ def handle_request_room_list():
     emit('room_list', list(rooms))
 
 @socketio.on('get_connections')
-def handle_request_room_list():
+def handle_request_connection_list():
     user_list = []
     current_room = usernames[request.sid]['room']
     
