@@ -186,7 +186,7 @@
         #closeConnectionsRoomBtn {
             background: none;
             padding: 5px 10px;
-            color: black;
+            color: white;
             font-size: 20px;
         }
 
@@ -302,7 +302,7 @@
             var messages = document.getElementById('messages');
             var li = document.createElement('li');
             li.textContent = data.username + ' ' + data.msg;
-            li.style.color = data.color || 'black';
+            li.style.color = data.color || 'white';
             messages.appendChild(li);
             messages.scrollTo({
                 top: messages.scrollHeight,
