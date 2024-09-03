@@ -15,15 +15,16 @@ def handle_create_or_join(data):
     username = data.get('username', 'Anonymous')
     room = data['room']
     password = data.get('password', '')
-
     if room in rooms:
         if rooms[room]['password'] and rooms[room]['password'] != password:
             emit('password_incorrect', 'Invalid password!')
             return
+        else:
+            join_room(room)
     else:
         rooms[room] = {'password': password}
-
-    join_room(room)
+        join_room(room)
+        emit('message', {'username': 'System:', 'msg': f'room {room} has been created!', 'color': 'blue'}, room=room)
     usernames[request.sid] = {'room': room, 'username': username}
     emit('message', {'username': username, 'msg': f'joined the room {room}', 'color': 'green'}, room=room)
     emit('room_list', list(rooms), broadcast=True)
