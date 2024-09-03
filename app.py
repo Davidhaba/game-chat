@@ -25,7 +25,7 @@ def handle_create_or_join(data):
 
     join_room(room)
     emit('message', {'username': username, 'msg': f'приєднався до кімнати {room}', 'color': 'green'}, room=room)
-    emit('room_list', [{'name': room} for room in rooms], broadcast=True)
+    emit('room_list', list(rooms), broadcast=True)
     emit('room_joined', {'room': room})
 
 @socketio.on('message')
