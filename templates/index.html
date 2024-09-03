@@ -104,10 +104,13 @@
         #connectedToRoom {
             display: none;
             position: absolute;
-            border: 1px solid #ccc;
             padding: 10px;
-            margin-top: 10px;
+            top: 50%;
+            left: 50%;
             background-color: #f9f9f9;
+            transform: translate(-50%, -50%);
+            background-color: rgba(0,0,0,0.5;
+            backdrop-filter: blur(10px);
         }
         #getConnectionsRoomBtn {
             position: absolute;
@@ -159,10 +162,12 @@
             </div>
             <button id="getConnectionsRoomBtn" onclick="getConnections()">Connections</button>
             <div id="connectedToRoom">
-                <button id="closeConnectionsRoomBtn" onclick="closeConnections()">X</button>
-                <p>Connected users to the room:</p>
-                <div id="divConnectionsToRoom"></div>
-                <p id="connectionsFoundP">No connected users found.</p>
+                <div style="border: 1px solid #ccc;">
+                    <button id="closeConnectionsRoomBtn" onclick="closeConnections()">X</button>
+                    <p>Connected users to the room:</p>
+                    <div id="divConnectionsToRoom"></div>
+                    <p id="connectionsFoundP">No connected users found.</p>
+                </div>
             </div>
         </div>
     </div>
