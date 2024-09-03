@@ -107,7 +107,7 @@
             <button id="togglePassword">👁</button>
           </div>
           <br>
-          <button onclick="createOrJoinRoom(this)">Create/Join a room</button>
+          <button id="createOrJoinRoomButton" onclick="createOrJoinRoom()">Create/Join a room</button>
 
           <div id="roomList">
             <h2>Existing rooms</h2>
@@ -129,7 +129,8 @@
 var socket = io();
 var currentRoom = null;
 const searchRoomsText = document.getElementById("searchRooms");
-
+const createOrJoinRoomButton = document.getElementByID("createOrJoinRoomButton");
+const createOrJoinText = "Create/Join a room";
 document.getElementById('togglePassword').addEventListener('click', function() {
     var passwordField = document.getElementById('password');
     var type = passwordField.getAttribute('type');
@@ -142,7 +143,7 @@ document.getElementById('togglePassword').addEventListener('click', function() {
     }
 });
 
-function createOrJoinRoom(button) {
+function createOrJoinRoom() {
     const usernameInput = document.getElementById('username');
     if (!usernameInput.value) {
         usernameInput.value = "Anonymous";
@@ -154,10 +155,10 @@ function createOrJoinRoom(button) {
     document.getElementById('password').style.borderColor = "black";
     if (roomValue) {
         socket.emit('create_or_join', {username: username, room: roomValue, password: password});
-        button.textContent = "Loading...";
+        createOrJoinRoomButton.textContent = "Loading...";
         room.style.borderColor = "black";
     } else {
-        button.textContent = "Create/Join a room";
+        createOrJoinRoomButton.textContent = createOrJoinText;
         room.style.borderColor = "red";
     }
 }
@@ -206,11 +207,13 @@ socket.on('room_joined', function(data) {
     document.getElementById('connection').style.display = 'none';
     document.getElementById('chat').style.display = 'flex';
     document.getElementById('message').disabled = false;
+    createOrJoinRoomButton.textContent = createOrJoinText;
 });
 
 socket.on('password_incorrect', function(message) {
     alert(message);
     document.getElementById('password').style.borderColor = "red";
+    createOrJoinRoomButton.textContent = createOrJoinText;
 });
 
 function searchRooms() {
