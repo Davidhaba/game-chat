@@ -22,12 +22,8 @@ def handle_create_or_join(data):
             return
     else:
         rooms[room] = {'password': password}
-        users_in_rooms[room] = {}
 
     join_room(room)
-    users_in_rooms[room][username] = None
-    user_sessions[request.sid] = {'username': username, 'room': room}
-
     emit('message', {'username': username, 'msg': f'приєднався до кімнати {room}', 'color': 'green'}, room=room)
     emit('room_list', [{'name': room} for room in rooms], broadcast=True)
     emit('room_joined', {'room': room})
