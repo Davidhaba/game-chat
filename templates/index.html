@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,58 +12,81 @@
             margin: 0;
             padding: 0;
             text-align: center;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
         }
+
         .container {
-            max-width: 700px;
             margin: auto;
             padding: 20px;
             background: white;
             border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        input[type="text"], input[type="password"] {
+
+        input[type="text"],
+        input[type="password"] {
             padding: 10px;
             margin: 10px;
             width: 70%;
             border: 1px solid black;
             border-radius: 4px;
             display: inline-block;
+            background-color: rgba(90, 90, 90, 0.4);
+            color: white;
         }
+        input[type="text"]::placeholder {
+            color: rgb(199, 199, 199);
+        }
+
         button {
             padding: 10px 20px;
             border: none;
             border-radius: 4px;
-            background-color: #007bff;
+            background-color: rgba(90, 90, 90, 0.4);
             color: white;
             cursor: pointer;
             margin: 10px;
-            transition: background 0.3s, transform 0.3s;
+            transition: background-color 0.3s, transform 0.3s;
         }
+
         button:hover {
             background-color: #0056b3;
         }
+
         #chat {
-            margin-top: 20px;
             display: none;
             flex-direction: column;
             align-items: center;
             overflow: hidden;
+            background-color: #000a46;
+            width: 100%;
+            height: 100%;
+            color: white;
+        }
+        #h2-chatName {
+            margin-top: 30px;
         }
         ul {
             list-style: none;
             padding: 0;
         }
+
         li {
             padding: 8px;
             border-bottom: 1px solid #ddd;
         }
+
         #roomList {
             margin-top: 20px;
             text-align: left;
         }
+
         #connection {
             display: block;
         }
+
         #messages {
             max-width: 90%;
             word-wrap: break-word;
@@ -74,10 +98,12 @@
             max-height: 75vh;
             box-sizing: border-box;
         }
+
         #message {
             width: 70%;
             max-width: 500px;
         }
+
         #inputMessage {
             position: absolute;
             bottom: 20px;
@@ -85,11 +111,13 @@
             justify-content: center;
             width: 100%;
         }
+
         .password-container {
             position: relative;
             display: inline-block;
             width: 100%;
         }
+
         #togglePassword {
             position: absolute;
             right: 14%;
@@ -101,201 +129,224 @@
             top: -3px;
             padding: 5px 5px;
         }
+
         #connectedToRoom {
             display: none;
             position: absolute;
             padding: 10px;
             top: 50%;
             left: 50%;
-            background-color: #f9f9f9;
+            width: 97.9%;
+            height: 97.9vh;
             transform: translate(-50%, -50%);
-            background-color: rgba(0,0,0,0.5;
-            backdrop-filter: blur(10px);
+            background-color: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(5px);
         }
+
+        #connectedToRoom>div {
+            border: 1px solid #ccc;
+            background-color: rgba(0, 4, 216, 0.616);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            min-width: 200px;
+            min-height: 150px;
+            padding: 20px;
+            border-radius: 10px;
+            transform: translate(-50%, -50%);
+        }
+
         #getConnectionsRoomBtn {
             position: absolute;
             top: 20px;
-            left: 10%;
+            left: 3%;
         }
+
         #closeConnectionsRoomBtn {
             background: none;
             padding: 5px 10px;
             color: black;
-            margin: 10px;
             font-size: 20px;
         }
+
         #closeConnectionsRoomBtn:hover {
             background-color: grey;
         }
+
         #closeConnectionsRoomBtn:active {
             transform: scale(0.9);
         }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <div id='connection'>
-          <h1>Welcome to the game</h1>
-          <input id="username" type="text" placeholder="Enter your name">
-          <br>
-          <input id="room" type="text" placeholder="Enter the name of the room">
-          <br>
-          <div class="password-container">
+    <div id='connection'>
+        <h1>Welcome to the game</h1>
+        <input id="username" type="text" placeholder="Enter your name">
+        <br>
+        <input id="room" type="text" placeholder="Enter the name of the room">
+        <br>
+        <div class="password-container">
             <input id="password" type="password" placeholder="Enter a password (optional)">
             <button id="togglePassword">👁</button>
-          </div>
-          <br>
-          <button id="createOrJoinRoomButton" onclick="createOrJoinRoom()">Create/Join a room</button>
+        </div>
+        <br>
+        <button id="createOrJoinRoomButton" onclick="createOrJoinRoom()">Create/Join a room</button>
 
-          <div id="roomList">
+        <div id="roomList">
             <h2>Existing rooms</h2>
             <p id="searchRooms">Search...</p>
             <ul id="rooms"></ul>
-          </div>
         </div>
-        <div id="chat">
-            <h2>Chat</h2>
-            <ul id="messages"></ul>
-            <div id='inputMessage'>
-              <input id="message" type="text" placeholder="Enter your message" disabled>
-              <button onclick="sendMessage()">Send</button>
-            </div>
-            <button id="getConnectionsRoomBtn" onclick="getConnections()">Connections</button>
-            <div id="connectedToRoom">
-                <div style="border: 1px solid #ccc;">
-                    <button id="closeConnectionsRoomBtn" onclick="closeConnections()">X</button>
-                    <p>Connected users to the room:</p>
-                    <div id="divConnectionsToRoom"></div>
-                    <p id="connectionsFoundP">No connected users found.</p>
-                </div>
+    </div>
+    <div id="chat">
+        <h2 id="h2-chatName">Chat</h2>
+        <ul id="messages"></ul>
+        <div id='inputMessage'>
+            <input id="message" type="text" placeholder="Enter your message" disabled>
+            <button onclick="sendMessage()">Send</button>
+        </div>
+        <button id="getConnectionsRoomBtn" onclick="getConnections()">Connections</button>
+        <div id="connectedToRoom">
+            <div>
+                <button id="closeConnectionsRoomBtn" onclick="closeConnections()">X</button>
+                <p>Connected users to the room:</p>
+                <div id="divConnectionsToRoom"></div>
+                <p id="connectionsFoundP">No connected users found.</p>
             </div>
         </div>
     </div>
-<script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
-<script>
-var socket = io();
-var currentRoom = null;
-const searchRoomsText = document.getElementById("searchRooms");
-const createOrJoinRoomButton = document.getElementById("createOrJoinRoomButton");
-const createOrJoinText = "Create/Join a room";
-const connectionsFoundP = document.getElementById("connectionsFoundP");
-document.getElementById('togglePassword').addEventListener('click', function() {
-    var passwordField = document.getElementById('password');
-    var type = passwordField.getAttribute('type');
-    if (type === 'password') {
-        passwordField.setAttribute('type', 'text');
-        this.textContent = '🙈';
-    } else {
-        passwordField.setAttribute('type', 'password');
-        this.textContent = '👁';
-    }
-});
+    <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
+    <script>
+        var socket = io();
+        var currentRoom = null;
+        const searchRoomsText = document.getElementById("searchRooms");
+        const createOrJoinRoomButton = document.getElementById("createOrJoinRoomButton");
+        const createOrJoinText = "Create/Join a room";
+        const connectionsFoundP = document.getElementById("connectionsFoundP");
+        document.getElementById('togglePassword').addEventListener('click', function () {
+            var passwordField = document.getElementById('password');
+            var type = passwordField.getAttribute('type');
+            if (type === 'password') {
+                passwordField.setAttribute('type', 'text');
+                this.textContent = '🙈';
+            } else {
+                passwordField.setAttribute('type', 'password');
+                this.textContent = '👁';
+            }
+        });
 
-function createOrJoinRoom() {
-    const usernameInput = document.getElementById('username');
-    if (!usernameInput.value) {
-        usernameInput.value = "Anonymous";
-    }
-    var username = usernameInput.value;
-    const room = document.getElementById('room');
-    var password = document.getElementById('password').value;
-    var roomValue = room.value.trim();
-    document.getElementById('password').style.borderColor = "black";
-    if (roomValue) {
-        socket.emit('create_or_join', {username: username, room: roomValue, password: password});
-        createOrJoinRoomButton.textContent = "Loading...";
-        room.style.borderColor = "black";
-    } else {
-        createOrJoinRoomButton.textContent = createOrJoinText;
-        room.style.borderColor = "red";
-    }
-}
-
-function sendMessage() {
-    const input = document.getElementById('message');
-    var msg = input.value;
-    if (msg && currentRoom) {
-        var username = document.getElementById('username').value.trim();
-        if (!username) {
-            username = "Anonymous";
+        function createOrJoinRoom() {
+            const usernameInput = document.getElementById('username');
+            if (!usernameInput.value) {
+                usernameInput.value = "Anonymous";
+            }
+            var username = usernameInput.value;
+            const room = document.getElementById('room');
+            var password = document.getElementById('password').value;
+            var roomValue = room.value.trim();
+            document.getElementById('password').style.borderColor = "black";
+            if (roomValue) {
+                socket.emit('create_or_join', { username: username, room: roomValue, password: password });
+                createOrJoinRoomButton.textContent = "Loading...";
+                room.style.borderColor = "black";
+            } else {
+                createOrJoinRoomButton.textContent = createOrJoinText;
+                room.style.borderColor = "red";
+            }
         }
-        socket.emit('message', {username: username, msg: msg, room: currentRoom});
-        input.value = '';
-        input.style.borderColor = "black";
-    } else {
-        input.style.borderColor = "red";
-    }
-}
 
-socket.on('message', function(data) {
-    var messages = document.getElementById('messages');
-    var li = document.createElement('li');
-    li.textContent = data.username + ' ' + data.msg;
-    li.style.color = data.color || 'black';
-    messages.appendChild(li);
-    messages.scrollTo({
-        top: messages.scrollHeight,
-        behavior: 'smooth'
-    });
-});
+        function sendMessage() {
+            const input = document.getElementById('message');
+            var msg = input.value;
+            if (msg && currentRoom) {
+                var username = document.getElementById('username').value.trim();
+                if (!username) {
+                    username = "Anonymous";
+                }
+                socket.emit('message', { username: username, msg: msg, room: currentRoom });
+                input.value = '';
+                input.style.borderColor = "black";
+            } else {
+                input.style.borderColor = "red";
+            }
+        }
 
-socket.on('room_list', function(rooms) {
-    var roomsList = document.getElementById('rooms');
-    roomsList.innerHTML = '';
-    if (rooms.length > 0) {
-      rooms.forEach(function(room) {
-        var li = document.createElement('li');
-        li.textContent = room;
-        roomsList.appendChild(li);
-      });
-      searchRoomsText.textContent = "";
-    } else {
-      searchRoomsText.textContent = "No rooms found.";
-    }
-});
+        socket.on('message', function (data) {
+            var messages = document.getElementById('messages');
+            var li = document.createElement('li');
+            li.textContent = data.username + ' ' + data.msg;
+            li.style.color = data.color || 'black';
+            messages.appendChild(li);
+            messages.scrollTo({
+                top: messages.scrollHeight,
+                behavior: 'smooth'
+            });
+        });
 
-socket.on('connected_list', function(connections) {
-    var divConnectionsToRoom = document.getElementById("divConnectionsToRoom");
-    divConnectionsToRoom.innerHTML = '';
-    if (connections.length > 0) {
-      connections.forEach(function(connection) {
-        var li = document.createElement('li');
-        li.textContent = connection;
-        divConnectionsToRoom.appendChild(li);
-      });
-      connectionsFoundP.textContent = "";
-    } else {
-      connectionsFoundP.textContent = "No connections found.";
-    }
-});
+        socket.on('room_list', function (rooms) {
+            var roomsList = document.getElementById('rooms');
+            roomsList.innerHTML = '';
+            if (rooms.length > 0) {
+                rooms.forEach(function (room) {
+                    var li = document.createElement('li');
+                    li.textContent = room;
+                    roomsList.appendChild(li);
+                });
+                searchRoomsText.textContent = "";
+            } else {
+                searchRoomsText.textContent = "No rooms found.";
+            }
+        });
 
-function getConnections() {
-    document.getElementById("connectedToRoom").style.display = "block";
-    connectionsFoundP.textContent = "Loading...";
-    socket.emit('get_connections');
-}
-function closeConnections() {
-    document.getElementById("connectedToRoom").style.display = "none";
-}
-socket.on('room_joined', function(data) {
-    currentRoom = data.room;
-    document.getElementById('connection').style.display = 'none';
-    document.getElementById('chat').style.display = 'flex';
-    document.getElementById('message').disabled = false;
-    createOrJoinRoomButton.textContent = createOrJoinText;
-});
+        socket.on('connected_list', function (connections) {
+            var divConnectionsToRoom = document.getElementById("divConnectionsToRoom");
+            divConnectionsToRoom.innerHTML = '';
+            if (connections.length > 0) {
+                connections.forEach(function (connection) {
+                    var li = document.createElement('li');
+                    li.textContent = connection;
+                    divConnectionsToRoom.appendChild(li);
+                });
+                connectionsFoundP.textContent = "";
+            } else {
+                connectionsFoundP.textContent = "No connections found.";
+            }
+        });
 
-socket.on('password_incorrect', function(message) {
-    alert(message);
-    document.getElementById('password').style.borderColor = "red";
-    createOrJoinRoomButton.textContent = createOrJoinText;
-});
+        function getConnections() {
+            document.getElementById("connectedToRoom").style.display = "block";
+            connectionsFoundP.textContent = "Loading...";
+            socket.emit('get_connections');
+        }
+        function closeConnections() {
+            document.getElementById("connectedToRoom").style.display = "none";
+        }
+        socket.on('room_joined', function (data) {
+            currentRoom = data.room;
+            document.getElementById('connection').style.display = 'none';
+            document.getElementById('chat').style.display = 'flex';
+            document.getElementById('message').disabled = false;
+            createOrJoinRoomButton.textContent = createOrJoinText;
+            document.getElementById("h2-chatName").textContent = currentRoom;
+        });
 
-function searchRooms() {
-    socket.emit('get_rooms');
-    searchRoomsText.textContent = "Search...";
-}
-searchRooms();
-</script>
+        socket.on('password_incorrect', function (message) {
+            alert(message);
+            document.getElementById('password').style.borderColor = "red";
+            createOrJoinRoomButton.textContent = createOrJoinText;
+        });
+
+        function searchRooms() {
+            socket.emit('get_rooms');
+            searchRoomsText.textContent = "Search...";
+        }
+        searchRooms();
+        document.getElementById('connection').style.display = 'none';
+        document.getElementById('chat').style.display = 'flex';
+        document.getElementById('message').disabled = false;
+
+    </script>
 </body>
+
 </html>
