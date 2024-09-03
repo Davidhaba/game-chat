@@ -35,7 +35,7 @@ def handle_message(data):
     msg = data['msg']
     room = data['room']
     username = data.get('username', 'Anonymous')
-    emit('message', {'username': username + ":", 'msg': msg, 'color': 'black'}, room=room)
+    emit('message', {'username': username + ":", 'msg': msg, 'color': 'white'}, room=room)
 
 @socketio.on('get_rooms')
 def handle_request_room_list():
