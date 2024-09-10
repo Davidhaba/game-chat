@@ -387,6 +387,7 @@
         
     socket.on('connect', function() {
     document.getElementById('disconnectMessage').style.display = 'none';
+    console.log('Connected');
     if (currentRoom) {
         socket.emit('create_or_join', {username: document.getElementById('username').value, room: currentRoom});
     }
