@@ -206,19 +206,21 @@
             height: 100%;
             background-color: rgba(0, 0, 0, 0.8);
             color: white;
-            display: flex;
+            display: none;
             justify-content: center;
             align-items: center;
             font-size: 24px;
-            display: none;
-            z-index: 999;
+            z-index: 99;
+        }
+        #disconnectMessage p {
+            font-weight: bold;
         }
     </style>
 </head>
 
 <body>
     <div id="disconnectMessage">
-        You are disconnected. Trying to reconnect...
+        <p>You are disconnected.\nTrying to reconnect...</p>
     </div>
     <div id='connection'>
         <div id="formRoom">
