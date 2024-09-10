@@ -385,21 +385,15 @@
         }
         searchRooms();
         
-    socket.on('connect', function() {
-    document.getElementById('disconnectMessage').style.display = 'none';
-    console.log('Connected');
-    if (currentRoom) {
-        socket.emit('create_or_join', {username: document.getElementById('username').value, room: currentRoom});
-    }
-});
-
 socket.on('disconnect', function() {
     document.getElementById('disconnectMessage').style.display = 'flex';
 });
 
 socket.io.on('reconnect', () => {
     document.getElementById('disconnectMessage').style.display = 'none';
-    console.log('Reconnected');
+    if (currentRoom) {
+        socket.emit('create_or_join', {username: document.getElementById('username').value, room: currentRoom});
+    }
 });
     </script>
 </body>
