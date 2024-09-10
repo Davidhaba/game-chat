@@ -390,6 +390,9 @@ socket.on('disconnect', function() {
 });
 socket.io.on('reconnect', () => {
     document.getElementById('disconnectMessage').style.display = 'none';
+    if (currentRoom) {
+        socket.emit('create_or_join', {username: document.getElementById('username').value, room: currentRoom});
+    }
 });
     </script>
 </body>
