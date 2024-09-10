@@ -282,6 +282,7 @@
 
         function sendMessage() {
             const input = document.getElementById('message');
+            input.focus();
             var msg = input.value;
             if (msg && currentRoom) {
                 var username = document.getElementById('username').value.trim();
