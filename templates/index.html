@@ -11,6 +11,9 @@
             margin: 0;
             padding: 0;
             text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             width: 100%;
             height: 100vh;
             overflow: hidden;
@@ -21,12 +24,11 @@
             padding: 10px;
             margin: 10px;
             width: 70%;
-            border: 2px solid black;
+            border: 1px solid black;
             border-radius: 5px;
             display: inline-block;
             background-color: rgba(90, 90, 90, 0.4);
             color: white;
-            box-shadow: 5px 10px 5px rgba(0, 0, 0, 0.2);
         }
 
         input[type="text"]::placeholder,
@@ -36,14 +38,13 @@
 
         button {
             padding: 10px 20px;
-            border: 2px solid black;
+            border: 1px solid black;
             border-radius: 4px;
             background-color: rgba(90, 90, 90, 0.4);
             color: white;
             cursor: pointer;
             margin: 10px;
             transition: background-color 0.3s, transform 0.2s;
-            box-shadow: 5px 10px 5px rgba(0, 0, 0, 0.2);
         }
 
         button:hover {
@@ -79,20 +80,18 @@
             padding: 8px;
             border-bottom: 1px solid #ddd;
         }
-
         #formRoom,
         #roomList {
             border: 1px solid #0056b3;
-            background-color: rgba(0, 0, 0, 0.03);
             border-radius: 20px;
-            width: 70%;
-            padding: 15px;
-            margin: 20px;
-            overflow: auto;
+            width: 80%;
+            padding: 5px 15px;
+            margin: 10px;
         }
 
         #roomList {
             text-align: left;
+            overflow: auto;
         }
 
         #connection {
@@ -124,7 +123,6 @@
             width: 70%;
             max-width: 500px;
         }
-
         #inputMessage {
             position: absolute;
             bottom: 20px;
@@ -141,13 +139,13 @@
 
         #togglePassword {
             position: absolute;
-            right: 14%;
+            right: 10%;
             border: none;
             cursor: pointer;
             font-size: 20px;
             background: none;
             color: white;
-            top: -3px;
+            top: -0px;
             padding: 5px 5px;
         }
 
@@ -198,9 +196,6 @@
             transform: scale(0.9);
         }
 
-        h2, h1 {
-            text-shadow: 5px 10px 10px rgba(0, 0, 0, 0.7);
-        }
     </style>
 </head>
 
