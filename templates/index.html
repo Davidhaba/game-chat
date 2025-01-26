@@ -299,6 +299,13 @@
             }
         }
 
+socket.on('password_retrieved', function(data) {
+    if (data) {
+        document.getElementById('password').value = data.password;
+        alert("Password for the room " + `'${data.room}': ` + data.password);
+    }
+});
+
         function sendMessage() {
             const input = document.getElementById('message');
             input.focus();
