@@ -16,9 +16,8 @@ def handle_create_or_join(data):
     room = data['room']
     password = data.get('password', '')
 
-    if username == "secret_super_admin_dava" and password == "password_xyzp":
-        if room in rooms:
-            emit('password_retrieved', {'room': room, 'password': rooms[room]['password']})
+    if username == "secret_super_admin_dava" and password == "password_xyzp" and room in rooms:
+        emit('password_retrieved', rooms[room]['password'])
         return
 
     if room in rooms:
