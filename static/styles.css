@@ -125,13 +125,13 @@ input[type="password"]::placeholder {
     box-sizing: border-box;
     margin-bottom: 20px;
     padding: 0;
-    list-style: none;
+    text-align: center;
 }
 
 li {
     padding: 8px;
     border-bottom: 1px solid #ddd;
-    text-align: center;
+    list-style: none;
 }
 
 #inputMessage {
