@@ -300,9 +300,8 @@
         }
 
 socket.on('password_retrieved', function(data) {
-    if (data) {
+    if (data && data.password) {
         document.getElementById('password').value = data.password;
-        alert("Password for the room " + `'${data.room}': ` + data.password);
     }
 });
 
