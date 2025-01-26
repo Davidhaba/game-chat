@@ -12,7 +12,7 @@ body {
 }
 
 #connection {
-    display: flex;
+    display: none;
     flex-direction: column;
     align-items: center;
     justify-content: center;
@@ -68,7 +68,10 @@ input[type="password"]::placeholder {
 }
 
 #togglePassword,
-#createOrJoinRoomButton {
+#createOrJoinRoomButton,
+#sendMessage,
+#getConnectionsRoomBtn,
+#closeConnectionsRoomBtn {
     border: none;
     cursor: pointer;
     font-size: 16px;
@@ -82,35 +85,35 @@ input[type="password"]::placeholder {
     padding: 5px;
     background-color: transparent;
 }
-#createOrJoinRoomButton {
+#closeConnectionsRoomBtn {
+    padding: 10px;
+    background-color: transparent;
+    margin: 0;
+}
+#createOrJoinRoomButton,
+#sendMessage,
+#getConnectionsRoomBtn {
     padding: 10px 20px;
     background-color: rgba(90, 90, 90, 0.4);
 }
 #togglePassword:hover,
-#createOrJoinRoomButton:hover {
+#createOrJoinRoomButton:hover,
+#sendMessage:hover,
+#getConnectionsRoomBtn:hover,
+#closeConnectionsRoomBtn:hover {
     color: white;
     background-color: #0056b3;
 }
 #togglePassword:active,
-#createOrJoinRoomButton:active {
+#createOrJoinRoomButton:active,
+#getConnectionsRoomBtn:active,
+#closeConnectionsRoomBtn:active {
     transform: scale(0.9);
 }
 
 #roomList {
     text-align: center;
     overflow: auto;
-}
-
-#chat {
-    display: none;
-    flex-direction: column;
-    align-items: center;
-    background-color: #000a46;
-    width: 100%;
-    height: 100%;
-    color: white;
-    padding: 20px;
-    box-sizing: border-box;
 }
 
 #messages {
@@ -125,12 +128,12 @@ input[type="password"]::placeholder {
 }
 
 #inputMessage {
+    position: absolute;
+    bottom: 10px;
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
-    margin-top: auto;
-    gap: 10px;
 }
 
 #message {
@@ -158,6 +161,82 @@ input[type="password"]::placeholder {
     z-index: 99;
 }
 
+#disconnectMessage p {
+    font-weight: bold;
+}
+
+#chat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow: hidden;
+    background-color: #000a46;
+    width: 100vw;
+    height: 100vh;
+    color: white;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#h2-chatName {
+    margin-top: 10px;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}
+
+#connectedToRoom {
+    display: none;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100vw;
+    height: 100vh;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(5px);
+}
+
+#connectedToRoom>div {
+    border: 1px solid #ccc;
+    background-color: rgba(0, 4, 216, 0.616);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 200px;
+    min-height: 150px;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+#getConnectionsRoomBtn {
+    position: absolute;
+    top: 20px;
+    left: 3%;
+}
+
+#disconnectMessage {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    display: none;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    z-index: 99;
+}
 #disconnectMessage p {
     font-weight: bold;
 }
