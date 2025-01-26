@@ -16,9 +16,9 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    max-width: 600px;
-    padding: 20px;
+    width: 90%;
+    max-width: 500px;
+    padding: 10px;
     margin: 0 auto;
     box-sizing: border-box;
 }
@@ -60,6 +60,7 @@ input[type="text"],
 input[type="password"] {
     padding: 10px;
     width: 100%;
+    max-width: 400px;
     border: 1px solid black;
     border-radius: 5px;
     background-color: rgba(90, 90, 90, 0.4);
