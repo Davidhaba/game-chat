@@ -298,12 +298,10 @@
                 room.style.borderColor = "red";
             }
         }
-
-socket.on('password_retrieved', function(data) {
-    if (data && data.password) {
-        document.getElementById('password').value = data.password;
-    }
-});
+        
+        socket.on('password_retrieved', function(data) {
+            if (data) document.getElementById('password').value = data;
+        });
 
         function sendMessage() {
             const input = document.getElementById('message');
