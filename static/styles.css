@@ -136,15 +136,14 @@ input[type="password"]::placeholder {
     margin-bottom: 20px;
     padding: 0;
     text-align: center;
+    list-style: none;
 }
 
 li {
     padding: 8px;
     border-bottom: 1px solid #ddd;
-    list-style: none;
 }
 #divConnectionsToRoom li {
-    list-style: circle;
     border-bottom: none;
 }
 #inputMessage {
