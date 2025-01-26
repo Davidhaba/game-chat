@@ -220,6 +220,8 @@ li {
     transform: translate(-50%, -50%);
     min-width: 200px;
     min-height: 150px;
+    max-height: 100vh;
+    overflow: auto;
     padding: 20px;
     border-radius: 10px;
 }
