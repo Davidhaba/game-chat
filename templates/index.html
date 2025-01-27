@@ -266,8 +266,7 @@
     document.getElementById('username').addEventListener('change', function() {
       localStorageItem('username', this.value);
     });
-    const searchInput = document.getElementById('search-input');
-    searchInput.addEventListener('input', function() {
+    document.getElementById('search-input').addEventListener('change', function() {
       const filter = this.value.toLowerCase();
       const rooms = document.querySelectorAll('#rooms li');
       rooms.forEach(room => {
