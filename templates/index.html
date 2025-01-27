@@ -268,9 +268,9 @@
     });
     document.getElementById('search-input').addEventListener('input', function() {
       const filter = this.value.toLowerCase();
-      searchRooms(filter);
+      searchRoomsInput(filter);
     });
-    function searchRooms(search=null) {
+    function searchRoomsInput(search=null) {
       const rooms = document.querySelectorAll('#rooms li');
       rooms.forEach(room => {
         if (!search || (search && room.textContent.toLowerCase().includes(search))) {
@@ -286,7 +286,7 @@
       input.value = '';
       input.focus();
       if (inputId == "search-input") {
-        searchRooms();
+        searchRoomsInput();
       }
     }
   </script>
