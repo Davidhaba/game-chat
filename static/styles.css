@@ -19,9 +19,23 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  width: 100vw;
   height: 100vh;
   background-color: #000a46;
   color: white;
+}
+
+.hidden {
+  display: none !important;
+}
+.section {
+  opacity: 1;
+  transform: translateX(100%);
+  transition: all 0.2s ease;
+}
+.section.active {
+  opacity: 1;
+  transform: none;
 }
 
 #connection {
@@ -142,18 +156,20 @@ input[type="password"]::placeholder {
   transition: all 0.3s;
 }
 .clear-input,
-#togglePassword {
-  position: absolute;
-  right: 5px;
-  padding: 5px;
+#togglePassword,
+#closeConnectionsRoomBtn {
   background-color: transparent;
   margin: 0;
   line-height: 1;
 }
+.clear-input,
+#togglePassword {
+  position: absolute;
+  right: 5px;
+  padding: 5px;
+}
 #closeConnectionsRoomBtn {
   padding: 10px;
-  background-color: transparent;
-  margin: 0;
 }
 #createOrJoinRoomButton,
 #sendMessage,
@@ -285,58 +301,45 @@ li {
   left: 3%;
 }
 
-.toast {
+#error-messages {
   position: fixed;
-  bottom: -80px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: rgba(0, 0, 0, 0.8);
+  top: 0;
+}
+.toast {
+  position: relative;
+  margin-top: 10px;
+  background-color: rgba(255, 0, 0, 0.6);
   color: white;
   padding: 20px;
   border-radius: 10px;
-  border: 1px solid grey;
+  border: 1px solid white;
   font-size: 16px;
   font-weight: bold;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  z-index: 99;
   opacity: 0;
   transition: all 0.3s ease;
 }
+
 .toast p {
-    margin: 0;
+  margin: 0;
 }
+
 .toast.show {
-  display: flex;
-  animation: slideIn 0.5s forwards, slideOut 0.5s 5s forwards;
+  opacity: 1;
+  transform: none;
+  animation: fadeIn 0.5s forwards, fadeOut 0.5s 5s forwards;
 }
-@keyframes slideIn {
-  to {
-    bottom: 30px;
-    opacity: 1;
-    pointer-events: all;
-  }
-}
-@keyframes slideOut {
-  to {
-    bottom: -80px;
+
+@keyframes fadeIn {
+  from {
     opacity: 0;
-    pointer-events: none;
+    transform: translateX(-100%);
   }
 }
 
-.hidden {
-  display: none !important;
-}
-.section {
-  opacity: 0;
-  transform: scale(0);
-  transition: all 0.5s ease;
-}
-.section.active {
-  opacity: 1;
-  transform: none;
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
 }
