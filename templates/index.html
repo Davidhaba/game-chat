@@ -2,282 +2,290 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <title>Game Chat</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <title>Game Chat</title>
 </head>
 
 <body>
-    <div id="disconnectMessage">
-        <p>You are disconnected.<br>Trying to reconnect...</p>
+  <div id="disconnectMessage">
+    <p>You are disconnected.<br>Trying to reconnect...</p>
+  </div>
+  <div class="section active" id="connection">
+    <div id="formRoom">
+      <h1>Welcome to the game</h1>
+      <div class="input-container">
+        <input id="username" type="text" placeholder="Enter your name">
+        <button class="clear-input" onclick="clearInput('username')">✖</button>
+      </div>
+      <div class="input-container">
+        <input id="room" type="text" placeholder="Enter the name of the room">
+        <button class="clear-input" onclick="clearInput('room')">✖</button>
+      </div>
+      <div class="input-container">
+        <input id="password" type="password" placeholder="Enter a password (optional)">
+        <button id="togglePassword">👁</button>
+      </div>
+      <br>
+      <button id="createOrJoinRoomButton" onclick="createOrJoinRoom()">Create/Join a room</button>
     </div>
-    <div id='connection' class="section active">
-        <div id="formRoom">
-            <h1>Welcome to the game</h1>
-            <div class="input-container">
-				<input id="username" type="text" placeholder="Enter your name">
-	            <button class="clear-input" onclick="clearInput('username')">✖</button>
-            </div>
-            <div class="input-container">
-				<input id="room" type="text" placeholder="Enter the name of the room">
-	            <button class="clear-input" onclick="clearInput('room')">✖</button>
-            </div>
-            <div class="input-container">
-                <input id="password" type="password" placeholder="Enter a password (optional)">
-                <button id="togglePassword">👁</button>
-            </div>
-            <br>
-            <button id="createOrJoinRoomButton" onclick="createOrJoinRoom()">Create/Join a room</button>
-        </div>
-        <div id="roomList">
-            <h2>Existing rooms</h2>
-            <div class="input-container">
-				<input id="search-input" type="text" placeholder="Search rooms...">
-				<button class="clear-input" onclick="clearInput('search-input')">✖</button>
-            </div>
-            <p id="searchRooms">Search...</p>
-            <ul id="rooms"></ul>
-        </div>
+    <div id="roomList">
+      <h2>Existing rooms</h2>
+      <div class="input-container">
+        <input id="search-input" type="text" placeholder="Search rooms...">
+        <button class="clear-input" onclick="clearInput('search-input')">✖</button>
+      </div>
+      <p id="searchRooms">Search...</p>
+      <ul id="rooms"></ul>
     </div>
-    <div id="chat" class="section hidden">
-        <h2 id="h2-chatName">Chat</h2>
-        <ul id="messages"></ul>
-		<div id="typingIndicator" style="display: none; color: lightgrey; font-style: italic; margin-top: 10px;">
-			Someone is typing...
-		</div>
-
-        <div id='inputMessage'>
-            <input id="message" type="text" placeholder="Enter your message" disabled>
-            <button id="sendMessage" onclick="sendMessage()">Send</button>
-        </div>
-        <button id="getConnectionsRoomBtn" onclick="getConnections()">Connections</button>
-        <div id="connectedToRoom">
-            <div>
-                <button id="closeConnectionsRoomBtn" onclick="closeConnections()">X</button>
-                <p>Connected users to the room:</p>
-                <div id="divConnectionsToRoom"></div>
-                <p id="connectionsFoundP">No connected users found.</p>
-            </div>
-        </div>
+  </div>
+  <div id="chat" class="section hidden">
+    <h2 id="h2-chatName">Chat</h2>
+    <ul id="messages"></ul>
+    <div id="typingIndicator" style="display: none; color: lightgrey; font-style: italic; margin-top: 10px;">
+      Someone is typing...
     </div>
-    <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
-    <script>
-        var socket = io();
-        var currentRoom = null;
-        const searchRoomsText = document.getElementById("searchRooms");
-        const createOrJoinRoomButton = document.getElementById("createOrJoinRoomButton");
-        const createOrJoinText = "Create/Join a room";
-        const connectionsFoundP = document.getElementById("connectionsFoundP");
-        document.getElementById('togglePassword').addEventListener('click', function () {
-            var passwordField = document.getElementById('password');
-            var type = passwordField.getAttribute('type');
-            if (type === 'password') {
-                passwordField.setAttribute('type', 'text');
-                this.textContent = '🙈';
-            } else {
-                passwordField.setAttribute('type', 'password');
-                this.textContent = '👁';
-            }
-        });
 
-        function createOrJoinRoom() {
-            const usernameInput = document.getElementById('username');
-            if (!usernameInput.value) {
-                usernameInput.value = "Anonymous";
-            }
-            var username = usernameInput.value;
-            const room = document.getElementById('room');
-            var password = document.getElementById('password').value;
-            var roomValue = room.value.trim();
-            document.getElementById('password').style.borderColor = "black";
-            if (roomValue) {
-                socket.emit('create_or_join', { username: username, room: roomValue, password: password });
-                createOrJoinRoomButton.textContent = "Loading...";
-                room.style.borderColor = "black";
-            } else {
-                createOrJoinRoomButton.textContent = createOrJoinText;
-                room.style.borderColor = "red";
-            }
+    <div id="inputMessage">
+      <input id="message" type="text" placeholder="Enter your message" disabled>
+      <button id="sendMessage" onclick="sendMessage()">Send</button>
+    </div>
+    <button id="getConnectionsRoomBtn" onclick="getConnections()">Connections</button>
+    <div id="connectedToRoom">
+      <div>
+        <button id="closeConnectionsRoomBtn" onclick="closeConnections()">X</button>
+        <p>Connected users to the room:</p>
+        <div id="divConnectionsToRoom"></div>
+        <p id="connectionsFoundP">No connected users found.</p>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
+  <script>
+    var socket = io();
+    var currentRoom = null;
+    const searchRoomsText = document.getElementById("searchRooms");
+    const createOrJoinRoomButton = document.getElementById("createOrJoinRoomButton");
+    const createOrJoinText = "Create/Join a room";
+    const connectionsFoundP = document.getElementById("connectionsFoundP");
+    document.getElementById('togglePassword').addEventListener('click', function() {
+      var passwordField = document.getElementById('password');
+      var type = passwordField.getAttribute('type');
+      if (type === 'password') {
+        passwordField.setAttribute('type', 'text');
+        this.textContent = '🙈';
+      } else {
+        passwordField.setAttribute('type', 'password');
+        this.textContent = '👁';
+      }
+    });
+
+    function createOrJoinRoom() {
+      const usernameInput = document.getElementById('username');
+      if (!usernameInput.value) {
+        usernameInput.value = "Anonymous";
+      }
+      var username = usernameInput.value;
+      const room = document.getElementById('room');
+      var password = document.getElementById('password').value;
+      var roomValue = room.value.trim();
+      document.getElementById('password').style.borderColor = "black";
+      if (roomValue) {
+        socket.emit('create_or_join', {
+          username: username,
+          room: roomValue,
+          password: password
+        });
+        createOrJoinRoomButton.textContent = "Loading...";
+        room.style.borderColor = "black";
+      } else {
+        createOrJoinRoomButton.textContent = createOrJoinText;
+        room.style.borderColor = "red";
+      }
+    }
+    socket.on('password_retrieved', function(data) {
+      if (data) document.getElementById('password').value = data;
+    });
+
+    function sendMessage() {
+      const input = document.getElementById('message');
+      input.focus();
+      var msg = input.value;
+      if (msg && currentRoom) {
+        var username = document.getElementById('username').value.trim();
+        if (!username) {
+          username = "Anonymous";
         }
-        
-        socket.on('password_retrieved', function(data) {
-            if (data) document.getElementById('password').value = data;
+        socket.emit('message', {
+          username: username,
+          msg: msg,
+          room: currentRoom
         });
+        input.value = '';
+        input.style.borderColor = "black";
+      } else {
+        input.style.borderColor = "red";
+      }
+    }
+    socket.on('message', function(data) {
+      var messages = document.getElementById('messages');
+      var li = document.createElement('li');
+      li.textContent = data.username + ' ' + data.msg;
+      li.style.color = data.color || 'white';
+      messages.appendChild(li);
+      messages.scrollTo({
+        top: messages.scrollHeight,
+        behavior: 'smooth'
+      });
+    });
+    socket.on('room_list', function(rooms) {
+      var roomsList = document.getElementById('rooms');
+      roomsList.innerHTML = '';
+      if (rooms.length > 0) {
+        rooms.forEach(function(room) {
+          var li = document.createElement('li');
+          li.textContent = room;
+          roomsList.appendChild(li);
+        });
+        searchRoomsText.textContent = "";
+      } else {
+        searchRoomsText.textContent = "No rooms found.";
+      }
+    });
+    socket.on('connected_list', function(connections) {
+      var divConnectionsToRoom = document.getElementById("divConnectionsToRoom");
+      divConnectionsToRoom.innerHTML = '';
+      if (connections.length > 0) {
+        connections.forEach(function(connection) {
+          var li = document.createElement('li');
+          li.textContent = connection;
+          divConnectionsToRoom.appendChild(li);
+        });
+        connectionsFoundP.textContent = "";
+      } else {
+        connectionsFoundP.textContent = "No connections found.";
+      }
+    });
 
-        function sendMessage() {
-            const input = document.getElementById('message');
-            input.focus();
-            var msg = input.value;
-            if (msg && currentRoom) {
-                var username = document.getElementById('username').value.trim();
-                if (!username) {
-                    username = "Anonymous";
-                }
-                socket.emit('message', { username: username, msg: msg, room: currentRoom });
-                input.value = '';
-                input.style.borderColor = "black";
-            } else {
-                input.style.borderColor = "red";
-            }
+    function getConnections() {
+      document.getElementById("connectedToRoom").style.display = "block";
+      connectionsFoundP.textContent = "Loading...";
+      socket.emit('get_connections');
+    }
+
+    function closeConnections() {
+      document.getElementById("connectedToRoom").style.display = "none";
+    }
+
+    function showSection(sectionId) {
+      const sections = document.querySelectorAll('.section');
+      sections.forEach((section) => {
+        if (section.id === sectionId) {
+          setTimeout(() => {
+            section.classList.remove('hidden');
+            setTimeout(() => section.classList.add('active'), 10);
+          }, 1000);
+        } else {
+          section.classList.remove('active');
+          setTimeout(() => section.classList.add('hidden'), 500);
         }
+      });
+    }
+    socket.on('room_joined', function(data) {
+      currentRoom = data.room;
+      showSection('chat');
+      document.getElementById('message').disabled = false;
+      createOrJoinRoomButton.textContent = createOrJoinText;
+      document.getElementById("h2-chatName").textContent = currentRoom;
+    });
+    socket.on('password_incorrect', function(message) {
+      alert(message);
+      document.getElementById('password').style.borderColor = "red";
+      createOrJoinRoomButton.textContent = createOrJoinText;
+    });
 
-        socket.on('message', function (data) {
-            var messages = document.getElementById('messages');
-            var li = document.createElement('li');
-            li.textContent = data.username + ' ' + data.msg;
-            li.style.color = data.color || 'white';
-            messages.appendChild(li);
-            messages.scrollTo({
-                top: messages.scrollHeight,
-                behavior: 'smooth'
-            });
+    function searchRooms() {
+      socket.emit('get_rooms');
+      searchRoomsText.textContent = "Search...";
+    }
+    searchRooms();
+    socket.on('disconnect', function() {
+      document.getElementById('disconnectMessage').style.display = 'flex';
+    });
+    socket.io.on('reconnect', () => {
+      document.getElementById('disconnectMessage').style.display = 'none';
+      if (currentRoom) {
+        socket.emit('create_or_join', {
+          username: document.getElementById('username').value,
+          room: currentRoom
         });
-
-        socket.on('room_list', function (rooms) {
-            var roomsList = document.getElementById('rooms');
-            roomsList.innerHTML = '';
-            if (rooms.length > 0) {
-                rooms.forEach(function (room) {
-                    var li = document.createElement('li');
-                    li.textContent = room;
-                    roomsList.appendChild(li);
-                });
-                searchRoomsText.textContent = "";
-            } else {
-                searchRoomsText.textContent = "No rooms found.";
-            }
+      }
+    });
+    const inputMessage = document.getElementById('message');
+    let typingTimeout;
+    inputMessage.addEventListener('input', () => {
+      if (inputMessage.value.trim()) {
+        socket.emit('typing', {
+          room: currentRoom,
+          username: document.getElementById('username').value
         });
+        resetTypingTimeout();
+      }
+    });
+    socket.on('display_typing', (data) => {
+      const typingIndicator = document.getElementById('typingIndicator');
+      typingIndicator.textContent = `${data.username} is typing...`;
+      typingIndicator.style.display = 'block';
+      resetTypingTimeout();
+    });
 
-        socket.on('connected_list', function (connections) {
-            var divConnectionsToRoom = document.getElementById("divConnectionsToRoom");
-            divConnectionsToRoom.innerHTML = '';
-            if (connections.length > 0) {
-                connections.forEach(function (connection) {
-                    var li = document.createElement('li');
-                    li.textContent = connection;
-                    divConnectionsToRoom.appendChild(li);
-                });
-                connectionsFoundP.textContent = "";
-            } else {
-                connectionsFoundP.textContent = "No connections found.";
-            }
-        });
+    function resetTypingTimeout() {
+      clearTimeout(typingTimeout);
+      typingTimeout = setTimeout(() => {
+        const typingIndicator = document.getElementById('typingIndicator');
+        typingIndicator.textContent = '';
+        typingIndicator.style.display = 'none';
+      }, 3000);
+    }
 
-        function getConnections() {
-            document.getElementById("connectedToRoom").style.display = "block";
-            connectionsFoundP.textContent = "Loading...";
-            socket.emit('get_connections');
+    function localStorageItem(name, value = null, isGet = false) {
+      try {
+        if (isGet) {
+          return localStorage.getItem(name);
+        } else if (name) {
+          localStorage.setItem(name, value);
         }
-        function closeConnections() {
-            document.getElementById("connectedToRoom").style.display = "none";
+      } catch (e) {
+        return;
+      }
+    }
+    const savedUsername = localStorageItem('username', null, true);
+    if (savedUsername) {
+      document.getElementById('username').value = savedUsername;
+    }
+    document.getElementById('username').addEventListener('change', function() {
+      localStorageItem('username', this.value);
+    });
+    const searchInput = document.getElementById('search-input');
+    searchInput.addEventListener('input', function() {
+      const filter = this.value.toLowerCase();
+      const rooms = document.querySelectorAll('#rooms li');
+      rooms.forEach(room => {
+        if (room.textContent.toLowerCase().includes(filter)) {
+          room.style.display = '';
+        } else {
+          room.style.display = 'none';
         }
-		function showSection(sectionId) {
-			const sections = document.querySelectorAll('.section');
-			sections.forEach((section) => {
-				if (section.id === sectionId) {
-					setTimeout(() => {
-						section.classList.remove('hidden');
-						setTimeout(() => section.classList.add('active'), 10);
-					}, 1000);
-				} else {
-					section.classList.remove('active');
-					setTimeout(() => section.classList.add('hidden'), 500);
-				}
-			});
-		}
-        socket.on('room_joined', function (data) {
-            currentRoom = data.room;
-            showSection('chat');
-            document.getElementById('message').disabled = false;
-            createOrJoinRoomButton.textContent = createOrJoinText;
-            document.getElementById("h2-chatName").textContent = currentRoom;
-        });
+      });
+    });
 
-        socket.on('password_incorrect', function (message) {
-            alert(message);
-            document.getElementById('password').style.borderColor = "red";
-            createOrJoinRoomButton.textContent = createOrJoinText;
-        });
-
-        function searchRooms() {
-            socket.emit('get_rooms');
-            searchRoomsText.textContent = "Search...";
-        }
-        searchRooms();
-        
-		socket.on('disconnect', function() {
-			document.getElementById('disconnectMessage').style.display = 'flex';
-		});
-		socket.io.on('reconnect', () => {
-			document.getElementById('disconnectMessage').style.display = 'none';
-			if (currentRoom) {
-				socket.emit('create_or_join', {username: document.getElementById('username').value, room: currentRoom});
-			}
-		});
-
-		const inputMessage = document.getElementById('message');
-		let typingTimeout;
-		inputMessage.addEventListener('input', () => {
-			if (inputMessage.value.trim()) {
-				socket.emit('typing', { room: currentRoom, username: document.getElementById('username').value });
-				resetTypingTimeout();
-			}
-		});
-		socket.on('display_typing', (data) => {
-			const typingIndicator = document.getElementById('typingIndicator');
-			typingIndicator.textContent = `${data.username} is typing...`;
-			typingIndicator.style.display = 'block';
-			resetTypingTimeout();
-		});
-		function resetTypingTimeout() {
-			clearTimeout(typingTimeout);
-			typingTimeout = setTimeout(() => {
-				const typingIndicator = document.getElementById('typingIndicator');
-				typingIndicator.textContent = '';
-				typingIndicator.style.display = 'none';
-			}, 3000);
-		}
-
-		function localStorageItem(name, value=null, isGet=false) {
-		try {
-			if (isGet) {
-			return localStorage.getItem(name);
-			} else if (name && value) {
-			localStorage.setItem(name, value);
-			}
-		} catch (e) {
-			return;
-		}
-		}
-		const savedUsername = localStorageItem('username', null, true);
-		if (savedUsername) {
-			document.getElementById('username').value = savedUsername;
-		}
-		document.getElementById('username').addEventListener('change', function () {
-			localStorageItem('username', this.value);
-		});
-
-		const searchInput = document.getElementById('search-input');
-		searchInput.addEventListener('input', function () {
-			const filter = this.value.toLowerCase();
-			const rooms = document.querySelectorAll('#rooms li');
-			rooms.forEach(room => {
-				if (room.textContent.toLowerCase().includes(filter)) {
-					room.style.display = '';
-				} else {
-					room.style.display = 'none';
-				}
-			});
-		});
-
-		function clearInput(inputId) {
-			const input = document.getElementById(inputId);
-			input.value = '';
-			input.focus();
-		}
-
-    </script>
+    function clearInput(inputId) {
+      const input = document.getElementById(inputId);
+      input.value = '';
+      input.focus();
+    }
+  </script>
 </body>
 
 </html>
