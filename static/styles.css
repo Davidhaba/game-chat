@@ -96,6 +96,7 @@ input[type="password"]::placeholder {
 }
 
 #togglePassword,
+.clear-input,
 #createOrJoinRoomButton,
 #sendMessage,
 #getConnectionsRoomBtn,
@@ -107,9 +108,10 @@ input[type="password"]::placeholder {
     color: white;
     transition: all 0.3s;
 }
+.clear-input,
 #togglePassword {
     position: absolute;
-    right: 10px;
+    right: 5px;
     padding: 5px;
     background-color: transparent;
 }
@@ -128,6 +130,7 @@ input[type="password"]::placeholder {
     margin-left: 5px;
     padding: 9px 19px;
 }
+.clear-input:hover,
 #togglePassword:hover,
 #createOrJoinRoomButton:hover,
 #sendMessage:hover,
@@ -136,6 +139,7 @@ input[type="password"]::placeholder {
     color: white;
     background-color: #0056b3;
 }
+.clear-input:active,
 #togglePassword:active,
 #createOrJoinRoomButton:active,
 #getConnectionsRoomBtn:active,
