@@ -56,6 +56,27 @@ body {
     align-items: center;
     justify-content: center;
 }
+.input-container input {
+    flex: 1;
+    padding-right: 30px;
+}
+
+.clear-input {
+    position: absolute;
+    right: 5px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    color: gray;
+    display: none;
+}
+.input-container input:not(:placeholder-shown) + .clear-input {
+    display: block;
+}
+.clear-input:hover {
+    color: black;
+}
 
 input[type="text"],
 input[type="password"] {
