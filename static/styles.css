@@ -1,3 +1,16 @@
+*::-webkit-scrollbar {
+  width: 9px;
+  background-color: rgba(200, 200, 240, 0.5);
+  border-radius: 2px;
+}
+*::-webkit-scrollbar-thumb {
+  background-color: white;
+  border-radius: 2px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background-color: #ccc;
+}
+
 body {
   font-family: Arial, sans-serif;
   margin: 0;
@@ -15,8 +28,10 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  position: absolute;
+  top: 0;
   width: 90%;
+  height: 100vh;
   max-width: 500px;
   padding: 10px;
   margin: 0 auto;
@@ -36,8 +51,15 @@ body {
   display: flex;
   flex-direction: column;
   text-align: center;
-  justify-content: center;
+  justify-content: space-between;
   overflow: auto;
+}
+#formRoom {
+  flex: 0 0 auto;
+}
+#roomList {
+  flex: 0 1 auto;
+  min-height: 100px;
 }
 
 #searchRooms,
@@ -45,9 +67,17 @@ body {
   margin: 0;
   padding: 0;
 }
+#rooms {
+  list-style: none;
+}
+#rooms li:active {
+  transition: all 0.2s;
+  background-color: red;
+}
 #searchRooms {
   margin-top: 20px;
 }
+
 .input-container {
   position: relative;
   width: 100%;
@@ -150,11 +180,6 @@ input[type="password"]::placeholder {
   transform: scale(0.9);
 }
 
-#roomList {
-  text-align: center;
-  overflow: auto;
-}
-
 #messages {
   max-width: 100%;
   word-wrap: break-word;
@@ -171,6 +196,13 @@ li {
   padding: 8px;
   border-bottom: 1px solid #ddd;
 }
+#typingIndicator {
+  display: none;
+  color: lightgrey;
+  font-style: italic;
+  /*margin-top: 10px;*/
+}
+
 #divConnectionsToRoom li {
   border-bottom: none;
 }
