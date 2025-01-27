@@ -133,11 +133,11 @@
             var roomsList = document.getElementById('rooms');
             roomsList.innerHTML = '';
             if (rooms.length > 0) {
-                rooms.forEach(function (room) {
-                    var li = document.createElement('li');
-                    li.textContent = room;
-                    roomsList.appendChild(li);
-                });
+			Object.entries(rooms).forEach(([roomName, roomData]) => {
+				const li = document.createElement('li');
+				li.textContent = `${roomName} (${roomData.userCount} users)`;
+				roomsList.appendChild(li);
+			});
                 searchRoomsText.textContent = "";
             } else {
                 searchRoomsText.textContent = "No rooms found.";
