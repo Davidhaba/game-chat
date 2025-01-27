@@ -45,6 +45,9 @@ body {
     margin: 0;
     padding: 0;
 }
+#searchRooms {
+    margin-top: 20px;
+}
 
 .input-container {
     position: relative;
