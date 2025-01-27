@@ -266,22 +266,28 @@
     document.getElementById('username').addEventListener('change', function() {
       localStorageItem('username', this.value);
     });
-    document.getElementById('search-input').addEventListener('change', function() {
+    document.getElementById('search-input').addEventListener('input', function() {
       const filter = this.value.toLowerCase();
+      searchRooms(filter);
+    });
+    function searchRooms(search=null) {
       const rooms = document.querySelectorAll('#rooms li');
       rooms.forEach(room => {
-        if (room.textContent.toLowerCase().includes(filter)) {
+        if (!search || (search && room.textContent.toLowerCase().includes(search))) {
           room.style.display = '';
         } else {
           room.style.display = 'none';
         }
       });
-    });
+    }
 
     function clearInput(inputId) {
       const input = document.getElementById(inputId);
       input.value = '';
       input.focus();
+      if (inputId == "search-input") {
+        searchRooms();
+      }
     }
   </script>
 </body>
