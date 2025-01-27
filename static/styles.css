@@ -71,8 +71,11 @@ body {
   list-style: none;
 }
 #rooms li:active {
-  transition: all 0.2s;
-  background-color: red;
+  transition: all 0.1s;
+  background-color: rgba(90, 90, 90, 0.4);
+}
+#rooms li:last-child {
+  border: none;
 }
 #searchRooms {
   margin-top: 20px;
@@ -333,4 +336,4 @@ li {
 .section.active {
   opacity: 1;
   transform: none;
-}
+  }
