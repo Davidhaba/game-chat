@@ -213,6 +213,7 @@ li {
     transform: translate(-50%, -50%);
     background-color: rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(5px);
+    overflow: hidden;
 }
 
 #connectedToRoom>div {
