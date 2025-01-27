@@ -203,7 +203,6 @@ li {
   display: none;
   color: lightgrey;
   font-style: italic;
-  /*margin-top: 10px;*/
 }
 
 #divConnectionsToRoom li {
@@ -246,6 +245,10 @@ li {
 
 #h2-chatName {
   margin-top: 10px;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 #connectedToRoom {
@@ -336,4 +339,4 @@ li {
 .section.active {
   opacity: 1;
   transform: none;
-  }
+}
