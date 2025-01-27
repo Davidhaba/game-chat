@@ -38,6 +38,35 @@ body {
   transform: none;
 }
 
+#connecting {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+}
+#dots::after {
+  content: "";
+  position: absolute;
+  animation: dotsAnimation 2s infinite;
+}
+@keyframes dotsAnimation {
+  0% {
+    content: "";
+  }
+  33% {
+    content: ".";
+  }
+  66% {
+    content: "..";
+  }
+  100% {
+    content: "...";
+  }
+}
+
 #connection {
   display: flex;
   flex-direction: column;
@@ -342,4 +371,4 @@ li {
     opacity: 0;
     transform: translateX(100%);
   }
-}
+  }
