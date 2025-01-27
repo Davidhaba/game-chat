@@ -48,7 +48,6 @@ body {
 #searchRooms {
     margin-top: 20px;
 }
-
 .input-container {
     position: relative;
     width: 100%;
@@ -190,7 +189,7 @@ li {
 }
 
 #chat {
-    display: none;
+    display: flex;
     flex-direction: column;
     align-items: center;
     overflow: hidden;
@@ -257,3 +256,17 @@ li {
 #disconnectMessage p {
     font-weight: bold;
 }
+
+.hidden {
+    display: none !important;
+}
+.section {
+    opacity: 0;
+    transform: scale(0);
+    transition: all 0.5s ease;
+}
+.section.active {
+    opacity: 1;
+    transform: none;
+}
+
