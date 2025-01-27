@@ -30,6 +30,7 @@
         </div>
         <div id="roomList">
             <h2>Existing rooms</h2>
+			<input id="search-input" type="text" placeholder="Search rooms...">
             <p id="searchRooms">Search...</p>
             <ul id="rooms"></ul>
         </div>
@@ -210,6 +211,19 @@ socket.io.on('reconnect', () => {
 	}
 	document.getElementById('username').addEventListener('change', function () {
 		localStorageItem('username', this.value);
+	});
+
+	const searchInput = document.getElementById('search-input');
+	searchInput.addEventListener('input', function () {
+		const filter = this.value.toLowerCase();
+		const rooms = document.querySelectorAll('#rooms li');
+		rooms.forEach(room => {
+			if (room.textContent.toLowerCase().includes(filter)) {
+				room.style.display = '';
+			} else {
+				room.style.display = 'none';
+			}
+		});
 	});
 
     </script>
