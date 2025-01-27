@@ -12,7 +12,7 @@
   <div id="disconnectMessage" class="toast">
     <p>You are disconnected. Trying to reconnect...</p>
   </div>
-  <div class="section active" id="connection">
+  <div class="section hidden" id="connection">
     <div id="formRoom">
       <h1>Welcome to the game</h1>
       <div class="input-container">
@@ -59,9 +59,53 @@
       </div>
     </div>
   </div>
+  <div id="error-messages"></div>
   <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
   <script>
-    var socket = io();
+    var socket = io({
+      reconnection: true,
+      reconnectionDelay: 6000,
+      reconnectionDelayMax: 7000,
+      reconnectionAttempts: 2
+    });
+    socket.on('connect', function() {
+      showSection('connection');
+    });
+    socket.on('connect_error', function(error) {
+      createErrorMessage('Failed to connect to server.');
+    });
+    socket.on('reconnect_failed', function() {
+      createErrorMessage('Failed to reconnect.');
+    });
+    socket.on('disconnect', function() {
+      document.getElementById('disconnectMessage').classList.add('show');
+    });
+    socket.io.on('reconnect', () => {
+      document.getElementById('disconnectMessage').classList.remove('show');
+      if (currentRoom) {
+        socket.emit('create_or_join', {
+          username: document.getElementById('username').value,
+          room: currentRoom
+        });
+      }
+    });
+
+    function createErrorMessage(text) {
+      var container = document.getElementById('error-messages');
+      var disconnectMessage = document.createElement('div');
+      disconnectMessage.classList.add('toast');
+      var messageText = document.createElement('p');
+      messageText.textContent = text;
+      disconnectMessage.appendChild(messageText);
+      container.appendChild(disconnectMessage);
+      setTimeout(function() {
+        disconnectMessage.classList.add('show');
+        setTimeout(function() {
+          disconnectMessage.classList.remove('show');
+          container.removeChild(disconnectMessage);
+        }, 5500);
+      }, 10);
+    }
     var currentRoom = null;
     const searchRoomsText = document.getElementById("searchRooms");
     const createOrJoinRoomButton = document.getElementById("createOrJoinRoomButton");
@@ -144,7 +188,9 @@
         rooms.forEach(function(room) {
           var li = document.createElement('li');
           li.textContent = room;
-          li.addEventListener('click', function() { document.getElementById('room').value = room; });
+          li.addEventListener('click', function() {
+            document.getElementById('room').value = room;
+          });
           roomsList.appendChild(li);
         });
         searchRoomsText.textContent = "";
@@ -178,16 +224,24 @@
     }
 
     function showSection(sectionId) {
+      const html = document.documentElement;
+      const body = document.body;
+      html.style.overflow = 'hidden';
+      body.style.overflow = 'hidden';
+      setTimeout(() => {
+        html.style.overflow = '';
+        body.style.overflow = '';
+      }, 1000);
       const sections = document.querySelectorAll('.section');
       sections.forEach((section) => {
         if (section.id === sectionId) {
           setTimeout(() => {
             section.classList.remove('hidden');
-            setTimeout(() => section.classList.add('active'), 10);
-          }, 1000);
+            setTimeout(() => section.classList.add('active'), 50);
+          }, 600);
         } else {
           section.classList.remove('active');
-          setTimeout(() => section.classList.add('hidden'), 500);
+          setTimeout(() => section.classList.add('hidden'), 300);
         }
       });
     }
@@ -209,18 +263,6 @@
       searchRoomsText.textContent = "Search...";
     }
     searchRooms();
-    socket.on('disconnect', function() {
-      document.getElementById('disconnectMessage').classList.add('show');
-    });
-    socket.io.on('reconnect', () => {
-      document.getElementById('disconnectMessage').classList.remove('show');
-      if (currentRoom) {
-        socket.emit('create_or_join', {
-          username: document.getElementById('username').value,
-          room: currentRoom
-        });
-      }
-    });
     const inputMessage = document.getElementById('message');
     let typingTimeout;
     inputMessage.addEventListener('input', () => {
@@ -270,7 +312,8 @@
       const filter = this.value.toLowerCase();
       searchRoomsInput(filter);
     });
-    function searchRoomsInput(search=null) {
+
+    function searchRoomsInput(search = null) {
       const rooms = document.querySelectorAll('#rooms li');
       rooms.forEach(room => {
         if (!search || (search && room.textContent.toLowerCase().includes(search))) {
