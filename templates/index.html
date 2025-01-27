@@ -192,6 +192,26 @@ socket.io.on('reconnect', () => {
         socket.emit('create_or_join', {username: document.getElementById('username').value, room: currentRoom});
     }
 });
+
+    function localStorageItem(name, value=null, isGet=false) {
+      try {
+        if (isGet) {
+          return localStorage.getItem(name);
+        } else if (name && value) {
+          localStorage.setItem(name, value);
+        }
+      } catch (e) {
+        return;
+      }
+    }
+	const savedUsername = localStorageItem('username', null, true);
+	if (savedUsername) {
+		document.getElementById('username').value = savedUsername;
+	}
+	document.getElementById('username').addEventListener('change', function () {
+		localStorageItem('username', this.value);
+	});
+
     </script>
 </body>
 
