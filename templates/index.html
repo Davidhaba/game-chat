@@ -38,6 +38,10 @@
     <div id="chat">
         <h2 id="h2-chatName">Chat</h2>
         <ul id="messages"></ul>
+		<div id="typingIndicator" style="display: none; color: lightgrey; font-style: italic; margin-top: 10px;">
+			Someone is typing...
+		</div>
+
         <div id='inputMessage'>
             <input id="message" type="text" placeholder="Enter your message" disabled>
             <button id="sendMessage" onclick="sendMessage()">Send</button>
@@ -184,47 +188,70 @@
         }
         searchRooms();
         
-socket.on('disconnect', function() {
-    document.getElementById('disconnectMessage').style.display = 'flex';
-});
-socket.io.on('reconnect', () => {
-    document.getElementById('disconnectMessage').style.display = 'none';
-    if (currentRoom) {
-        socket.emit('create_or_join', {username: document.getElementById('username').value, room: currentRoom});
-    }
-});
-
-    function localStorageItem(name, value=null, isGet=false) {
-      try {
-        if (isGet) {
-          return localStorage.getItem(name);
-        } else if (name && value) {
-          localStorage.setItem(name, value);
-        }
-      } catch (e) {
-        return;
-      }
-    }
-	const savedUsername = localStorageItem('username', null, true);
-	if (savedUsername) {
-		document.getElementById('username').value = savedUsername;
-	}
-	document.getElementById('username').addEventListener('change', function () {
-		localStorageItem('username', this.value);
-	});
-
-	const searchInput = document.getElementById('search-input');
-	searchInput.addEventListener('input', function () {
-		const filter = this.value.toLowerCase();
-		const rooms = document.querySelectorAll('#rooms li');
-		rooms.forEach(room => {
-			if (room.textContent.toLowerCase().includes(filter)) {
-				room.style.display = '';
-			} else {
-				room.style.display = 'none';
+		socket.on('disconnect', function() {
+			document.getElementById('disconnectMessage').style.display = 'flex';
+		});
+		socket.io.on('reconnect', () => {
+			document.getElementById('disconnectMessage').style.display = 'none';
+			if (currentRoom) {
+				socket.emit('create_or_join', {username: document.getElementById('username').value, room: currentRoom});
 			}
 		});
-	});
+
+		const inputMessage = document.getElementById('message');
+		let typingTimeout;
+		inputMessage.addEventListener('input', () => {
+			if (inputMessage.value.trim()) {
+				socket.emit('typing', { room: currentRoom, username: document.getElementById('username').value });
+				resetTypingTimeout();
+			}
+		});
+		socket.on('display_typing', (data) => {
+			const typingIndicator = document.getElementById('typingIndicator');
+			typingIndicator.textContent = `${data.username} is typing...`;
+			typingIndicator.style.display = 'block';
+			resetTypingTimeout();
+		});
+		function resetTypingTimeout() {
+			clearTimeout(typingTimeout);
+			typingTimeout = setTimeout(() => {
+				const typingIndicator = document.getElementById('typingIndicator');
+				typingIndicator.textContent = '';
+				typingIndicator.style.display = 'none';
+			}, 3000);
+		}
+
+		function localStorageItem(name, value=null, isGet=false) {
+		try {
+			if (isGet) {
+			return localStorage.getItem(name);
+			} else if (name && value) {
+			localStorage.setItem(name, value);
+			}
+		} catch (e) {
+			return;
+		}
+		}
+		const savedUsername = localStorageItem('username', null, true);
+		if (savedUsername) {
+			document.getElementById('username').value = savedUsername;
+		}
+		document.getElementById('username').addEventListener('change', function () {
+			localStorageItem('username', this.value);
+		});
+
+		const searchInput = document.getElementById('search-input');
+		searchInput.addEventListener('input', function () {
+			const filter = this.value.toLowerCase();
+			const rooms = document.querySelectorAll('#rooms li');
+			rooms.forEach(room => {
+				if (room.textContent.toLowerCase().includes(filter)) {
+					room.style.display = '';
+				} else {
+					room.style.display = 'none';
+				}
+			});
+		});
 
     </script>
 </body>
