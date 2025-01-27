@@ -43,9 +43,7 @@
   <div id="chat" class="section hidden">
     <h2 id="h2-chatName">Chat</h2>
     <ul id="messages"></ul>
-    <div id="typingIndicator" style="display: none; color: lightgrey; font-style: italic; margin-top: 10px;">
-      Someone is typing...
-    </div>
+    <div id="typingIndicator">Someone is typing...</div>
 
     <div id="inputMessage">
       <input id="message" type="text" placeholder="Enter your message" disabled>
@@ -146,6 +144,7 @@
         rooms.forEach(function(room) {
           var li = document.createElement('li');
           li.textContent = room;
+          li.addEventListener('click', function() { document.getElementById('room').value = room; });
           roomsList.appendChild(li);
         });
         searchRoomsText.textContent = "";
