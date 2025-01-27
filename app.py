@@ -65,5 +65,12 @@ def handle_disconnect():
         username = usernames[user_id]['username']
         emit('message', {'username': username, 'msg': f'left the room {room}', 'color': 'red'}, room=room)
         del usernames[user_id]
+
+@socketio.on('typing')
+def handle_typing(data):
+    room = data['room']
+    username = data['username']
+    emit('display_typing', {'username': username}, room=room, broadcast=True)
+
 if __name__ == '__main__':
     socketio.run(app, host='0.0.0.0', port=80)
