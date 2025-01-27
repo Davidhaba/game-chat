@@ -9,8 +9,8 @@
 </head>
 
 <body>
-  <div id="disconnectMessage">
-    <p>You are disconnected.<br>Trying to reconnect...</p>
+  <div id="disconnectMessage" class="toast">
+    <p>You are disconnected. Trying to reconnect...</p>
   </div>
   <div class="section active" id="connection">
     <div id="formRoom">
@@ -211,10 +211,10 @@
     }
     searchRooms();
     socket.on('disconnect', function() {
-      document.getElementById('disconnectMessage').style.display = 'flex';
+      document.getElementById('disconnectMessage').classList.add('show');
     });
     socket.io.on('reconnect', () => {
-      document.getElementById('disconnectMessage').style.display = 'none';
+      document.getElementById('disconnectMessage').classList.remove('show');
       if (currentRoom) {
         socket.emit('create_or_join', {
           username: document.getElementById('username').value,
