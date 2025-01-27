@@ -9,8 +9,8 @@
 </head>
 
 <body>
-  <div id="disconnectMessage" class="toast">
-    <p>You are disconnected. Trying to reconnect...</p>
+  <div class="section active" id="connecting">
+    <h2>Connecting to server<span id="dots"></span></h2>
   </div>
   <div class="section hidden" id="connection">
     <div id="formRoom">
@@ -62,11 +62,11 @@
   <div id="error-messages"></div>
   <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
   <script>
+    let dataDisconnectRet;
     var socket = io({
       reconnection: true,
       reconnectionDelay: 6000,
-      reconnectionDelayMax: 7000,
-      reconnectionAttempts: 2
+      reconnectionDelayMax: 7000
     });
     socket.on('connect', function() {
       showSection('connection');
@@ -78,19 +78,26 @@
       createErrorMessage('Failed to reconnect.');
     });
     socket.on('disconnect', function() {
-      document.getElementById('disconnectMessage').classList.add('show');
+      dataDisconnectRet = createErrorMessage(text, true);
     });
     socket.io.on('reconnect', () => {
-      document.getElementById('disconnectMessage').classList.remove('show');
-      if (currentRoom) {
-        socket.emit('create_or_join', {
-          username: document.getElementById('username').value,
-          room: currentRoom
-        });
+      const {
+        container,
+        disconnectMessage
+      } = dataDisconnectRet;
+      if (container && disconnectMessage) {
+        removeErrorMessage(container, disconnectMessage);
+        dataDisconnectRet = null;
+        if (currentRoom) {
+          socket.emit('create_or_join', {
+            username: document.getElementById('username').value,
+            room: currentRoom
+          });
+        }
       }
     });
 
-    function createErrorMessage(text) {
+    function createErrorMessage(text, toReturn = false) {
       var container = document.getElementById('error-messages');
       var disconnectMessage = document.createElement('div');
       disconnectMessage.classList.add('toast');
@@ -100,11 +107,22 @@
       container.appendChild(disconnectMessage);
       setTimeout(function() {
         disconnectMessage.classList.add('show');
-        setTimeout(function() {
-          disconnectMessage.classList.remove('show');
-          container.removeChild(disconnectMessage);
-        }, 5500);
+        if (!toReturn) {
+          setTimeout(function() {
+            removeErrorMessage(disconnectMessage, container);
+          }, 5500);
+        } else {
+          return {
+            container,
+            disconnectMessage
+          };
+        }
       }, 10);
+    }
+
+    function removeErrorMessage(disconnectMessage, container) {
+      disconnectMessage.classList.remove('show');
+      container.removeChild(disconnectMessage);
     }
     var currentRoom = null;
     const searchRoomsText = document.getElementById("searchRooms");
