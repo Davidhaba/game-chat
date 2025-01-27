@@ -12,7 +12,7 @@
     <div id="disconnectMessage">
         <p>You are disconnected.<br>Trying to reconnect...</p>
     </div>
-    <div id='connection'>
+    <div id='connection' class="section active">
         <div id="formRoom">
             <h1>Welcome to the game</h1>
             <div class="input-container">
@@ -35,7 +35,7 @@
             <ul id="rooms"></ul>
         </div>
     </div>
-    <div id="chat">
+    <div id="chat" class="section hidden">
         <h2 id="h2-chatName">Chat</h2>
         <ul id="messages"></ul>
 		<div id="typingIndicator" style="display: none; color: lightgrey; font-style: italic; margin-top: 10px;">
@@ -133,11 +133,11 @@
             var roomsList = document.getElementById('rooms');
             roomsList.innerHTML = '';
             if (rooms.length > 0) {
-			Object.entries(rooms).forEach(([roomName, roomData]) => {
-				const li = document.createElement('li');
-				li.textContent = `${roomName} (${roomData.userCount} users)`;
-				roomsList.appendChild(li);
-			});
+                rooms.forEach(function (room) {
+                    var li = document.createElement('li');
+                    li.textContent = room;
+                    roomsList.appendChild(li);
+                });
                 searchRoomsText.textContent = "";
             } else {
                 searchRoomsText.textContent = "No rooms found.";
@@ -167,10 +167,23 @@
         function closeConnections() {
             document.getElementById("connectedToRoom").style.display = "none";
         }
+		function showSection(sectionId) {
+			const sections = document.querySelectorAll('.section');
+			sections.forEach((section) => {
+				if (section.id === sectionId) {
+					setTimeout(() => {
+						section.classList.remove('hidden');
+						setTimeout(() => section.classList.add('active'), 10);
+					}, 1000);
+				} else {
+					section.classList.remove('active');
+					setTimeout(() => section.classList.add('hidden'), 500);
+				}
+			});
+		}
         socket.on('room_joined', function (data) {
             currentRoom = data.room;
-            document.getElementById('connection').style.display = 'none';
-            document.getElementById('chat').style.display = 'flex';
+            showSection('chat');
             document.getElementById('message').disabled = false;
             createOrJoinRoomButton.textContent = createOrJoinText;
             document.getElementById("h2-chatName").textContent = currentRoom;
