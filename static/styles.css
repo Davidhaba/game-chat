@@ -114,6 +114,8 @@ input[type="password"]::placeholder {
     right: 5px;
     padding: 5px;
     background-color: transparent;
+    margin: 0;
+    line-height: 1;
 }
 #closeConnectionsRoomBtn {
     padding: 10px;
