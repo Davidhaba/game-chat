@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO, emit, join_room, leave_room
+import os
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -72,5 +73,6 @@ def handle_typing(data):
     username = data['username']
     emit('display_typing', {'username': username}, room=room, broadcast=True)
 
-if __name__ == '__main__':
-    socketio.run(app, host='0.0.0.0', port=80)
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8080))
+    socketio.run(app, host="0.0.0.0", port=port)
