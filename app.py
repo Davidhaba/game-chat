@@ -20,7 +20,7 @@ def generate_message(params = {}):
 
 @app.route('/')
 def index():
-    return render_template('index-new.html')
+    return render_template('index.html')
 
 @socketio.on('create_or_join')
 def handle_create_or_join(data):
