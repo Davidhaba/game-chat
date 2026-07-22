@@ -4,153 +4,196 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles-new.css') }}">
   <title>Game Chat</title>
 </head>
 
 <body>
-  <div class="section active" id="connecting">
-    <span id="dots">CONNECTING</span>
-  </div>
-  <div class="section hidden" id="connection">
-    <div id="formRoom">
-      <h1>Welcome to the game</h1>
-      <div class="input-container">
-        <input id="username" type="text" placeholder="Enter your name">
-        <button class="clear-input" onclick="clearInput('username')">✖</button>
-      </div>
-      <div class="input-container">
-        <input id="room" type="text" placeholder="Enter the name of the room">
-        <button class="clear-input" onclick="clearInput('room')">✖</button>
-      </div>
-      <div class="input-container">
-        <input id="password" type="password" placeholder="Enter a password (optional)">
-        <button id="togglePassword">👁</button>
-      </div>
-      <br>
-      <button id="createOrJoinRoomButton" onclick="createOrJoinRoom()">Create/Join a room</button>
-    </div>
-    <div id="roomList">
-      <h2>Existing rooms</h2>
-      <div class="input-container">
-        <input id="search-input" type="text" placeholder="Search rooms...">
-        <button class="clear-input" onclick="clearInput('search-input')">✖</button>
-      </div>
-      <p id="searchRooms">Search...</p>
-      <ul id="rooms"></ul>
-    </div>
-  </div>
-  <div id="chat" class="section hidden">
-    <h2 id="h2-chatName">Chat</h2>
-    <ul id="messages"></ul>
-    <div id="typingIndicator">Someone is typing...</div>
+  <div class="background-glow glow-one"></div>
+  <div class="background-glow glow-two"></div>
 
-    <div id="inputMessage">
-      <input id="message" type="text" placeholder="Enter your message" disabled>
-      <button id="sendMessage" onclick="sendMessage()">Send</button>
+  <div class="section active" id="connecting">
+    <div class="connecting-card">
+      <h2>Connecting</h2>
+      <div class="loading-dots"><span></span><span></span><span></span></div>
     </div>
-    <button id="getConnectionsRoomBtn" onclick="getConnections()">Connections</button>
+  </div>
+
+  <div class="section hidden" id="connection">
+    <div class="panel-grid">
+      <div id="formRoom" class="glass-card">
+        <div class="panel-head">
+          <h1>Welcome to the game</h1>
+        </div>
+        <div class="field-hint">Your display name (optional). Shown to others.</div>
+        <div class="input-container">
+          <input id="username" type="text" placeholder="e.g. Player42">
+          <button class="clear-input" onclick="clearInput('username')">✖</button>
+        </div>
+        <div class="field-hint">Room name. Choose an existing room or create a new one.</div>
+        <div class="input-container">
+          <input id="roomInput" type="text" placeholder="e.g. lobby-1">
+          <button class="clear-input" onclick="clearInput('roomInput')">✖</button>
+        </div>
+        <div class="field-hint">Room password (optional). Leave empty for a public room.</div>
+        <div class="input-container">
+          <input id="passwordInput" type="password" placeholder="set to lock the room">
+          <button id="togglePassword">👁</button>
+        </div>
+        <button id="createOrJoinRoomButton" onclick="createOrJoinRoom()">Create/Join a room</button>
+      </div>
+
+      <div id="roomList" class="glass-card">
+        <div class="panel-head">
+          <h2>Existing rooms</h2>
+        </div>
+        <div class="field-hint">Quick filter for rooms by name.</div>
+        <div class="input-container">
+          <input id="search-input" type="text" placeholder="filter rooms by name...">
+          <button class="clear-input" onclick="clearInput('search-input')">✖</button>
+        </div>
+        <ul id="roomsList"></ul>
+      </div>
+    </div>
+  </div>
+
+  <div id="chat" class="section hidden">
+    <div class="chat-shell">
+      <div class="chat-header">
+        <div>
+          <h2 id="h2-chatName">Chat</h2>
+          <div class="room-status">
+            <span class="status-dot"></span>
+            <span id="roomStatusText">Disconnected</span>
+          </div>
+          <div id="typingIndicator"></div>
+        </div>
+        <button id="getConnectionsRoomBtn" onclick="getConnections()">Connections</button>
+      </div>
+      <ul id="messages"></ul>
+
+      <div id="inputMessage">
+        <input id="message" type="text" placeholder="Enter your message" disabled>
+        <button id="sendMessage">Send</button>
+      </div>
+    </div>
+
     <div id="connectedToRoom">
-      <div>
-        <button id="closeConnectionsRoomBtn" onclick="closeConnections()">X</button>
-        <p>Connected users to the room:</p>
+      <div id="connections-modal">
+        <button id="closeConnectionsRoomBtn">✕</button>
+        <div id="connectionsLoading" class="spinner hidden" aria-hidden="true" title="Loading"></div>
+        <p id="connectionsTitle">Connected users to the room:</p>
         <div id="divConnectionsToRoom"></div>
         <p id="connectionsFoundP">No connected users found.</p>
       </div>
     </div>
   </div>
-  <div id="error-messages"></div>
+
+  <div id="messages-container"></div>
   <script src="https://cdn.socket.io/4.3.2/socket.io.min.js"></script>
   <script>
-    let dataDisconnectRet;
+    let username;
     var socket = io({
       reconnection: true,
       reconnectionDelay: 6000,
       reconnectionDelayMax: 7000
     });
-    socket.on('connect', function() {
-      showSection('connection');
+    function setConnection(isConnected = false) {
+      const roomStatusText = document.getElementById('roomStatusText');
+      const statusDot = document.querySelector('.status-dot');
+      if (isConnected) {
+        if (roomStatusText) roomStatusText.textContent = 'Connected';
+        if (statusDot) statusDot.className = 'status-dot connected';
+      } else {
+        if (roomStatusText) roomStatusText.textContent = 'Disconnected';
+        if (statusDot) statusDot.className = 'status-dot disconnected';
+      }
+    }
+    socket.on('connect', function () {
+      if (!currentRoom) showSection('connection');
     });
-    socket.on('connect_error', function(error) {
-      createErrorMessage('Failed to connect to server.');
+    socket.on('connect_error', function (error) {
+      createMessage('Failed to connect to server.', 'error');
+      setConnection(false);
     });
-    socket.on('reconnect_failed', function() {
-      createErrorMessage('Failed to reconnect.');
+    socket.on('reconnect_failed', function () {
+      createMessage('Failed to reconnect.', 'error');
+      setConnection(false);
     });
-    socket.on('disconnect', function() {
-      dataDisconnectRet = createErrorMessage(text, true);
+    socket.on('disconnect', function () {
+      createMessage('You have been disconnected from the server.', 'error');
+      setConnection(false);
     });
     socket.io.on('reconnect', () => {
-      const {
-        container,
-        disconnectMessage
-      } = dataDisconnectRet;
-      if (container && disconnectMessage) {
-        removeErrorMessage(container, disconnectMessage);
-        dataDisconnectRet = null;
-        if (currentRoom) {
-          socket.emit('create_or_join', {
-            username: document.getElementById('username').value,
-            room: currentRoom
-          });
-        }
-      }
+      createMessage('Connection restored.', 'success');
+      setConnection(true);
     });
 
-    function createErrorMessage(text, toReturn = false) {
-      var container = document.getElementById('error-messages');
-      var disconnectMessage = document.createElement('div');
-      disconnectMessage.classList.add('toast');
+    function createMessage(text, type = 'info') {
+      var container = document.getElementById('messages-container');
+      var messageEl = document.createElement('div');
+      messageEl.classList.add('toast', type);
       var messageText = document.createElement('p');
       messageText.textContent = text;
-      disconnectMessage.appendChild(messageText);
-      container.appendChild(disconnectMessage);
-      setTimeout(function() {
-        disconnectMessage.classList.add('show');
-        if (!toReturn) {
-          setTimeout(function() {
-            removeErrorMessage(disconnectMessage, container);
-          }, 5500);
-        } else {
-          return {
-            container,
-            disconnectMessage
-          };
-        }
+      messageEl.appendChild(messageText);
+      container.appendChild(messageEl);
+
+      setTimeout(function () {
+        messageEl.classList.add('show');
+        setTimeout(function () {
+          messageEl.classList.remove('show');
+          setTimeout(function () {
+            container.removeChild(messageEl);
+          }, 350);
+        }, 5000);
       }, 10);
+
+      return messageEl;
     }
 
-    function removeErrorMessage(disconnectMessage, container) {
-      disconnectMessage.classList.remove('show');
-      container.removeChild(disconnectMessage);
-    }
     var currentRoom = null;
-    const searchRoomsText = document.getElementById("searchRooms");
+    var currentUserId = null;
     const createOrJoinRoomButton = document.getElementById("createOrJoinRoomButton");
     const createOrJoinText = "Create/Join a room";
     const connectionsFoundP = document.getElementById("connectionsFoundP");
-    document.getElementById('togglePassword').addEventListener('click', function() {
-      var passwordField = document.getElementById('password');
-      var type = passwordField.getAttribute('type');
+    document.getElementById('connectedToRoom').addEventListener('click', function (event) {
+      if (event.target === this) {
+        closeConnections();
+      }
+    });
+    document.getElementById('closeConnectionsRoomBtn').addEventListener('click', closeConnections);
+    document.getElementById('sendMessage').addEventListener('click', sendMessage);
+    document.getElementById('togglePassword').addEventListener('click', function () {
+      var passwordInput = document.getElementById('passwordInput');
+      var type = passwordInput.getAttribute('type');
       if (type === 'password') {
-        passwordField.setAttribute('type', 'text');
+        passwordInput.setAttribute('type', 'text');
         this.textContent = '🙈';
       } else {
-        passwordField.setAttribute('type', 'password');
+        passwordInput.setAttribute('type', 'password');
         this.textContent = '👁';
       }
     });
+    function addPreventDefaultFor(selector, events = ['mousedown', 'touchstart']) {
+      document.querySelectorAll(selector).forEach(el => {
+        events.forEach(ev => el.addEventListener(ev, function (e) { e.preventDefault(); }));
+      });
+    }
+    addPreventDefaultFor('#sendMessage');
+    addPreventDefaultFor('#togglePassword');
+    addPreventDefaultFor('.clear-input');
 
     function createOrJoinRoom() {
       const usernameInput = document.getElementById('username');
       if (!usernameInput.value) {
         usernameInput.value = "Anonymous";
       }
-      var username = usernameInput.value;
-      const room = document.getElementById('room');
-      var password = document.getElementById('password').value;
-      var roomValue = room.value.trim();
-      document.getElementById('password').style.borderColor = "black";
+      username = usernameInput.value;
+      const roomInput = document.getElementById('roomInput');
+      const passwordInput = document.getElementById('passwordInput');
+      var password = passwordInput ? passwordInput.value : '';
+      var roomValue = roomInput.value.trim();
+      if (passwordInput) passwordInput.classList.remove('dangerous');
       if (roomValue) {
         socket.emit('create_or_join', {
           username: username,
@@ -158,157 +201,341 @@
           password: password
         });
         createOrJoinRoomButton.textContent = "Loading...";
-        room.style.borderColor = "black";
+        roomInput.classList.remove('dangerous');
       } else {
         createOrJoinRoomButton.textContent = createOrJoinText;
-        room.style.borderColor = "red";
+        roomInput.classList.add('dangerous');
       }
     }
-    socket.on('password_retrieved', function(data) {
-      if (data) document.getElementById('password').value = data;
+    document.getElementById('roomInput').addEventListener('input', function () {
+      if (this.value.trim()) {
+        this.classList.remove('dangerous');
+      }
+    });
+    socket.on('password_retrieved', function (data) {
+      if (data) document.getElementById('passwordInput').value = data;
     });
 
     function sendMessage() {
       const input = document.getElementById('message');
-      input.focus();
-      var msg = input.value;
+      if (!input) return;
+      if (document.activeElement !== input) input.focus();
+      var msg = input.value?.trim();
       if (msg && currentRoom) {
-        var username = document.getElementById('username').value.trim();
-        if (!username) {
-          username = "Anonymous";
-        }
         socket.emit('message', {
-          username: username,
-          msg: msg,
+          username: username || 'Anonymous',
+          text: msg,
           room: currentRoom
         });
         input.value = '';
-        input.style.borderColor = "black";
+        input.classList.remove('dangerous');
       } else {
-        input.style.borderColor = "red";
+        input.classList.add('dangerous');
       }
     }
-    socket.on('message', function(data) {
-      var messages = document.getElementById('messages');
-      var li = document.createElement('li');
-      li.textContent = data.username + ' ' + data.msg;
-      li.style.color = data.color || 'white';
-      messages.appendChild(li);
-      messages.scrollTo({
-        top: messages.scrollHeight,
+
+    function isAtBottom(container) {
+      return container.scrollHeight - container.scrollTop - container.clientHeight < 120;
+    }
+
+    function scrollMessagesToBottom(container) {
+      container.scrollTo({
+        top: container.scrollHeight,
         behavior: 'smooth'
       });
+    }
+
+    function createInitialsAvatar(name) {
+      const displayName = (name || 'Anonymous').trim();
+      const words = displayName.split(' ').filter(Boolean);
+      let initials;
+      if (words.length >= 2) {
+        initials = (words[0][0] + words[1][0]).toUpperCase();
+      } else if (words.length === 1) {
+        initials = words[0].substring(0, 2).toUpperCase();
+      } else {
+        initials = 'A';
+      }
+      const colors = ['#667eea', '#764ba2', '#f093fb', '#4facfe', '#00f2fe', '#43e97b', '#fa709a'];
+      const color = colors[Math.abs(displayName.charCodeAt(0) || 0) % colors.length];
+      const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect fill='${color}' width='32' height='32'/><text x='50%' y='50%' dominant-baseline='central' text-anchor='middle' font-size='14' font-weight='bold' fill='white' font-family='sans-serif'>${initials}</text></svg>`;
+      return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+    }
+
+    socket.on('message', function (data) {
+      var messages = document.getElementById('messages');
+      var shouldScroll = isAtBottom(messages);
+      var li = document.createElement('li');
+      li.className = 'message-item';
+
+      if (data.color === 'green') {
+        li.classList.add('message-success');
+      } else if (data.color === 'red') {
+        li.classList.add('message-error');
+      }
+
+      var senderNameRaw = (data.username || 'Anonymous').toString();
+      var senderName = senderNameRaw.replace(/:$/, '').trim();
+
+      var meta = document.createElement('div');
+      meta.className = 'message-meta';
+
+      var avatar = document.createElement('img');
+      avatar.className = 'message-avatar';
+      avatar.src = createInitialsAvatar(senderName);
+      avatar.alt = 'Avatar';
+
+      var sender = document.createElement('span');
+      sender.className = 'message-user';
+      sender.textContent = senderName;
+
+      var time = document.createElement('span');
+      time.className = 'message-time';
+      var timestamp = data.timestamp ? new Date(data.timestamp) : null;
+      if (!timestamp || isNaN(timestamp.getTime())) {
+        timestamp = new Date();
+      }
+      time.textContent = timestamp.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+
+      if (data.is_system) {
+        var body = document.createElement('div');
+        body.className = 'message-body message-system-body';
+        body.textContent = data.text || data.msg || '';
+        li.classList.add('message-system');
+        li.appendChild(body);
+      } else {
+        var meta = document.createElement('div');
+        meta.className = 'message-meta';
+
+        var avatar = document.createElement('img');
+        avatar.className = 'message-avatar';
+        avatar.src = createInitialsAvatar(senderName);
+        avatar.alt = 'Avatar';
+
+        var sender = document.createElement('span');
+        sender.className = 'message-user';
+        sender.textContent = senderName;
+
+        var time = document.createElement('span');
+        time.className = 'message-time';
+        var timestamp = data.timestamp ? new Date(data.timestamp) : new Date();
+        if (isNaN(timestamp.getTime())) {
+          timestamp = new Date();
+        }
+        time.textContent = timestamp.toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+
+        var body = document.createElement('div');
+        body.className = 'message-body';
+        body.textContent = data.text || '';
+
+        if (data.user_id && currentUserId && data.user_id === currentUserId) {
+          li.classList.add('message-me');
+        } else {
+          li.classList.add('message-other');
+        }
+
+        meta.appendChild(avatar);
+        meta.appendChild(sender);
+        meta.appendChild(time);
+        li.appendChild(meta);
+        li.appendChild(body);
+      }
+
+      messages.appendChild(li);
+      if (shouldScroll) {
+        scrollMessagesToBottom(messages);
+      }
     });
-    socket.on('room_list', function(rooms) {
-      var roomsList = document.getElementById('rooms');
+    socket.on('room_list', function (rooms) {
+      var roomsList = document.getElementById('roomsList');
       roomsList.innerHTML = '';
       if (rooms.length > 0) {
-        rooms.forEach(function(room) {
+        rooms.forEach(function (room) {
           var li = document.createElement('li');
           li.textContent = room;
-          li.addEventListener('click', function() {
-            document.getElementById('room').value = room;
+          li.addEventListener('click', function () {
+            const roomInput = document.getElementById('roomInput');
+            if (!room) return;
+            roomInput.value = room;
+            if (roomInput.value.trim()) {
+              roomInput.classList.remove('dangerous');
+            }
           });
           roomsList.appendChild(li);
         });
-        searchRoomsText.textContent = "";
       } else {
-        searchRoomsText.textContent = "No rooms found.";
+        roomsList.innerHTML = "No rooms found.";
       }
     });
-    socket.on('connected_list', function(connections) {
+    socket.on('connected_list', function (connections) {
       var divConnectionsToRoom = document.getElementById("divConnectionsToRoom");
       divConnectionsToRoom.innerHTML = '';
+      var spinner = document.getElementById('connectionsLoading');
+      if (spinner) spinner.classList.add('hidden');
       if (connections.length > 0) {
-        connections.forEach(function(connection) {
+        connections.forEach(function (connection) {
           var li = document.createElement('li');
           li.textContent = connection;
           divConnectionsToRoom.appendChild(li);
         });
         connectionsFoundP.textContent = "";
       } else {
-        connectionsFoundP.textContent = "No connections found.";
+        connectionsFoundP.textContent = "No connected users found.";
       }
     });
 
     function getConnections() {
       document.getElementById("connectedToRoom").style.display = "block";
-      connectionsFoundP.textContent = "Loading...";
+      connectionsFoundP.textContent = "";
+      var spinner = document.getElementById('connectionsLoading');
+      if (spinner) spinner.classList.remove('hidden');
       socket.emit('get_connections');
     }
 
     function closeConnections() {
       document.getElementById("connectedToRoom").style.display = "none";
+      var spinner = document.getElementById('connectionsLoading');
+      if (spinner) spinner.classList.add('hidden');
     }
 
+    const sectionTimers = new Map();
     function showSection(sectionId) {
-      const html = document.documentElement;
-      const body = document.body;
-      html.style.overflow = 'hidden';
-      body.style.overflow = 'hidden';
-      setTimeout(() => {
-        html.style.overflow = '';
-        body.style.overflow = '';
-      }, 1000);
       const sections = document.querySelectorAll('.section');
+      sectionTimers.forEach((timers, id) => {
+        if (timers.show) {
+          clearTimeout(timers.show);
+        }
+        if (timers.hide) {
+          clearTimeout(timers.hide);
+        }
+      });
+
       sections.forEach((section) => {
+        if (!sectionTimers.has(section.id)) {
+          sectionTimers.set(section.id, { show: null, hide: null });
+        }
+
+        const timers = sectionTimers.get(section.id);
+
         if (section.id === sectionId) {
-          setTimeout(() => {
-            section.classList.remove('hidden');
-            setTimeout(() => section.classList.add('active'), 50);
-          }, 600);
+          if (timers.hide) {
+            clearTimeout(timers.hide);
+            timers.hide = null;
+          }
+          if (!section.classList.contains('active')) {
+            timers.show = setTimeout(() => {
+              section.classList.remove('hidden');
+              timers.show = setTimeout(() => { section.classList.add('active') }, 50);
+            }, 400);
+          }
         } else {
-          section.classList.remove('active');
-          setTimeout(() => section.classList.add('hidden'), 300);
+          if (timers.show) {
+            clearTimeout(timers.show);
+            timers.show = null;
+          }
+          if (section.classList.contains('active')) {
+            section.classList.remove('active');
+          }
+          timers.hide = setTimeout(() => {
+            section.classList.add('hidden');
+            timers.hide = null;
+          }, 300);
         }
       });
     }
-    socket.on('room_joined', function(data) {
+    socket.on('room_joined', function (data) {
       currentRoom = data.room;
+      currentUserId = data.user_id || currentUserId;
       showSection('chat');
       document.getElementById('message').disabled = false;
       createOrJoinRoomButton.textContent = createOrJoinText;
+      setConnection(true);
       document.getElementById("h2-chatName").textContent = currentRoom;
     });
-    socket.on('password_incorrect', function(message) {
+    socket.on('password_incorrect', function (message) {
       alert(message);
-      document.getElementById('password').style.borderColor = "red";
+      document.getElementById('passwordInput').classList.add('dangerous');
       createOrJoinRoomButton.textContent = createOrJoinText;
     });
 
     function searchRooms() {
+      var roomsList = document.getElementById('roomsList');
+      if (roomsList) roomsList.innerHTML = 'Searching...';
       socket.emit('get_rooms');
-      searchRoomsText.textContent = "Search...";
     }
     searchRooms();
     const inputMessage = document.getElementById('message');
-    let typingTimeout;
-    inputMessage.addEventListener('input', () => {
-      if (inputMessage.value.trim()) {
-        socket.emit('typing', {
-          room: currentRoom,
-          username: document.getElementById('username').value
-        });
-        resetTypingTimeout();
-      }
-    });
+    let typingTimeout = null;
+    let typingUsers = {};
+    if (inputMessage) {
+      inputMessage.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' && !event.shiftKey) {
+          event.preventDefault();
+          sendMessage();
+        }
+      });
+      inputMessage.addEventListener('input', () => {
+        if (!inputMessage) return;
+        if (inputMessage.value.trim()) {
+          inputMessage.classList.remove('dangerous');
+          if (!currentRoom) return;
+          socket.emit('typing', {
+            room: currentRoom,
+            user_id: currentUserId
+          });
+          startTypingCleaner();
+        }
+      });
+    }
     socket.on('display_typing', (data) => {
-      const typingIndicator = document.getElementById('typingIndicator');
-      typingIndicator.textContent = `${data.username} is typing...`;
-      typingIndicator.style.display = 'block';
-      resetTypingTimeout();
+      if (!data.username || !data.user_id) return;
+      typingUsers[data.user_id] = {
+        username: data.username,
+        user_id: data.user_id,
+        timestamp: new Date(data.timestamp).getTime()
+      };
+      updateTypingIndicator();
+      startTypingCleaner();
     });
 
-    function resetTypingTimeout() {
-      clearTimeout(typingTimeout);
-      typingTimeout = setTimeout(() => {
-        const typingIndicator = document.getElementById('typingIndicator');
-        typingIndicator.textContent = '';
-        typingIndicator.style.display = 'none';
-      }, 3000);
+    function updateTypingIndicator() {
+      const typingIndicator = document.getElementById('typingIndicator');
+      if (!typingIndicator) return;
+      const usernames = Object.values(typingUsers).map(user => user.username);
+      typingIndicator.textContent = usernames.length > 0 ? `${usernames.join(', ')} is typing...` : '';
+    }
+    function startTypingCleaner() {
+      if (typingTimeout) {
+        clearTimeout(typingTimeout);
+      }
+      typingTimeout = setTimeout(cleanTypingUsers, 40);
+    }
+    function cleanTypingUsers() {
+      typingTimeout = null;
+      const now = Date.now();
+      let nextExpiry = Infinity;
+      Object.keys(typingUsers).forEach(id => {
+        const timestamp = typingUsers[id].timestamp;
+        const delta = Math.max(0, Math.min(3000, now - timestamp));
+        if (delta >= 3000) {
+          delete typingUsers[id];
+        } else {
+          nextExpiry = Math.min(nextExpiry, 3000 - delta);
+        }
+      });
+      updateTypingIndicator();
+      if (Object.keys(typingUsers).length > 0 && nextExpiry !== Infinity) {
+        typingTimeout = setTimeout(cleanTypingUsers, nextExpiry);
+      }
     }
 
-    function localStorageItem(name, value = null, isGet = false) {
+    function localStorageItem(name, isGet = false, value = null) {
       try {
         if (isGet) {
           return localStorage.getItem(name);
@@ -319,20 +546,20 @@
         return;
       }
     }
-    const savedUsername = localStorageItem('username', null, true);
+    const savedUsername = localStorageItem('username', true);
     if (savedUsername) {
       document.getElementById('username').value = savedUsername;
     }
-    document.getElementById('username').addEventListener('change', function() {
-      localStorageItem('username', this.value);
+    document.getElementById('username').addEventListener('change', function () {
+      localStorageItem('username', false, this.value);
     });
-    document.getElementById('search-input').addEventListener('input', function() {
+    document.getElementById('search-input').addEventListener('input', function () {
       const filter = this.value.toLowerCase();
       searchRoomsInput(filter);
     });
 
     function searchRoomsInput(search = null) {
-      const rooms = document.querySelectorAll('#rooms li');
+      const rooms = document.querySelectorAll('#roomsList li');
       rooms.forEach(room => {
         if (!search || (search && room.textContent.toLowerCase().includes(search))) {
           room.style.display = '';
@@ -345,7 +572,6 @@
     function clearInput(inputId) {
       const input = document.getElementById(inputId);
       input.value = '';
-      input.focus();
       if (inputId == "search-input") {
         searchRoomsInput();
       }
